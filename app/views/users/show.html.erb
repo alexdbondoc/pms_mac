@@ -1,0 +1,32 @@
+<%#@user.each do |user|%>
+<div class="row">
+    <div class="col-xs-8 col-xs-offset-2">
+      <div class="well well-lg">
+			<h4 align="center"><%= @user.empname %>'s Information</h4>
+			<div class="center">
+				
+			</div>
+			<div class="user-title center">
+			    <li><strong><%= @user.address %></strong></li>
+			    <li><strong><%= @user.email %></strong></li>
+			    <li><strong><%= @user.contact_number %></strong></li>
+			    <li><strong><% @designation = Designation.find(@user.designation_id) %> <%= @designation.name %></strong></li>
+			    <li><strong><% @department = Department.find(@user.department_id) %> <%= @department.name %></strong></li>
+				<% if logged_in? && (current_user == @user  || current_desig == "System Admin") %>
+					<%= link_to "Update Information", edit_user_path(@user), class: "btn btn-xs btn-primary" %>
+				<% end %>
+				<%= link_to "View all users", users_path, class: "btn btn-xs btn-success" %>
+			</div>
+			<div class="user-body">
+			    <h4 align="center"><%= @user.empname %>'s Requests</h4>
+			    <div class="user-meta-details">
+			        
+			    </div>
+			</div>
+			<div class="center">
+				
+			</div>
+		</div>
+    </div>
+</div>
+<%#end%>
