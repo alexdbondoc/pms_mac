@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+  before_action :require_user
 	before_action :set_user, only: [:edit, :update, :show]
   before_action :require_admin, except: [:index, :show]
   def index
@@ -47,7 +48,7 @@ class UsersController < ApplicationController
   end
 
   def require_same_user
-    if current_user != @user and !current_user.admin?
+    if current_user != @user and !current_desig == "System Admin"
       flash[:danger] = "You can only update your own account"
       redirect_to root_path
     end

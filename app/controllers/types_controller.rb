@@ -1,4 +1,5 @@
 class TypesController < ApplicationController
+  before_action :require_user
 	before_action :require_admin, except: [:index, :show]
   def index
 	    @types = Type.paginate(page: params[:page], per_page: 5)

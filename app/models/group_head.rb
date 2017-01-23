@@ -1,0 +1,2 @@
+class GroupHead < ApplicationRecord
+end

@@ -1,4 +1,5 @@
 class GroupsController < ApplicationController
+  before_action :require_user
   before_action :require_admin, except: [:index, :show]
 	def index
 	    @groups = Group.paginate(page: params[:page], per_page: 5)

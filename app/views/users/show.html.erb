@@ -12,7 +12,7 @@
 			    <li><strong><%= @user.contact_number %></strong></li>
 			    <li><strong><% @designation = Designation.find(@user.designation_id) %> <%= @designation.name %></strong></li>
 			    <li><strong><% @department = Department.find(@user.department_id) %> <%= @department.name %></strong></li>
-				<% if logged_in? && (current_user == @user  || current_desig == "System Admin") %>
+				<% if logged_in? && (current_desig.name == "System Admin") %>
 					<%= link_to "Update Information", edit_user_path(@user), class: "btn btn-xs btn-primary" %>
 				<% end %>
 				<%= link_to "View all users", users_path, class: "btn btn-xs btn-success" %>

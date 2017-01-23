@@ -1,0 +1,6 @@
+<h1 align="center">Welcome to <%= @officer.user.empname if @officer.user%>'s page</h1>
+<div align="center">
+	<div class="row">
+		<span class="badge"><%= link_to "Update Officer", edit_officer_path(@officer) %></span>
+	</div>
+</div>

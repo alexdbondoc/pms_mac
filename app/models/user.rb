@@ -1,6 +1,8 @@
 class User < ApplicationRecord
 	belongs_to :department
 	belongs_to :designation
+	has_many :officers, dependent: :destroy
+	has_many :requests, dependent: :destroy
 
 	before_save{ self.email = email.downcase }
 	validates :empname, presence: true, 

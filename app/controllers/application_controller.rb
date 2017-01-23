@@ -11,6 +11,14 @@ class ApplicationController < ActionController::Base
     @current_desig ||= Designation.find(current_user.designation_id)
   end
 
+  #def current_officer
+    #@off = Arel::Table.new(:officers)
+    #current_officer ||= @off.where(@off[:department_id].eq(current_user.department_id)).project(Arel.sql('*'))
+    #current_officer.to_sql
+    #@officer_data = current_officer
+    #current_officer = Officer.select("*").where(:department_id => current_user.department_id)
+  #end
+
   def logged_in?
     !!current_user
   end
@@ -18,12 +26,8 @@ class ApplicationController < ActionController::Base
   def require_user
   	if !logged_in?
   		flash[:danger] = "You must be logged in to perform that action"
-  		riderect_to root_path
+  		redirect_to root_path
   	end
-  end
-
-  def getID
-
   end
 
 end
