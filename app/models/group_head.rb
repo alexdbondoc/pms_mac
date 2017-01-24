@@ -1,2 +1,0 @@
-class GroupHead < ApplicationRecord
-end

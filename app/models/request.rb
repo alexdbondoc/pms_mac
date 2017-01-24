@@ -10,5 +10,5 @@ class Request < ApplicationRecord
 	validates :qty, presence: true, 
 				length: { minimum: 1, maximum: 2}	
 	validates :reason, presence: true, 
-				length: { minimum: 15, maximum: 50}	
+				length: { minimum: 15, maximum: 150}	
 end

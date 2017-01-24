@@ -19,6 +19,7 @@
 				<li>Product Description: <%= @request.product.name %></li>
 				<li>Requested Quantity: <%= pluralize(@request.qty, "#{@request.unit.name}") %></li>
 				<li>Purpose: <%= @request.reason %></li>
+				<li>Status: <%= @request.status %></li>
 			</div>
 		</div>
 	</ul>
@@ -29,8 +30,12 @@
 			<%= link_to "Delete this request", requests_path(@request), method: :delete, 
 												data: {confirm: "Are you sure you want to delete this request?"}, 
 													class: "btn btn-xs btn-danger" %>
+		<% elsif logged_in? && (current_user.id == @request.officer.user_id) %>
+			<%= link_to "Approve", request_path(@request), method: :put, 
+                                      data: {confirm: "Are you sure you want to approve this request?"}, 
+                                        class: "btn btn-xs btn-success" %>
 		<% end %>
-			<%= link_to "View all requests", requests_path, class: "btn btn-xs btn-success" %>
+			<%= link_to "View all requests", requests_path, class: "btn btn-xs btn-primary" %>
 		</div>
 	</hr>
 </div>
