@@ -15,6 +15,7 @@ Rails.application.routes.draw do
 	resources :categories
 	resources :officers
 	resources :requests
+	resources :request_lines
 	resources :units
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end

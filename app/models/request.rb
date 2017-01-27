@@ -3,8 +3,7 @@ class Request < ApplicationRecord
 	belongs_to :department
 	belongs_to :officer
 	belongs_to :user
-	has_many :request_lines
-	accepts_nested_attributes_for :request_lines,
-    			:allow_destroy => true
+	has_many :request_lines, inverse_of: :request, dependent: :destroy
+	accepts_nested_attributes_for :request_lines
 	validates :reason, presence: true, length: { minimum: 15, maximum: 150}	
 end

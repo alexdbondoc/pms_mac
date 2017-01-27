@@ -1,6 +1,5 @@
-
+<%= form_for(@request) do |f| %>
 <%= render 'share/errors', obj: @request %>
-<%= form_for @request do |f| %>
 	<div class="panel panel-default">
   	<!-- Default panel contents -->
   		<div class="panel-heading center"><strong>Requisition of Equipments Form</strong></div>
@@ -9,12 +8,16 @@
 	  		<thead>
 	  			<tr>
 			  		<div class="row">
-			  			<div class="form-group">
+			  			<div class="form-group">	
 							<td></td>
 							<td></td>
 							<td></td>
 							<td> <center><%= f.label "Select request type: " %></center> </td>
-							<td> <center><%= f.collection_select(:category_id, Category.all, :id, :name) %></center> </td>
+							<td> 
+								<center>
+									<%= f.collection_select(:category_id, Category.all, :id, :name) %>
+								</center> 
+							</td>
 						  	<td></td>
 							<td></td>
 						</div>
@@ -26,14 +29,18 @@
 		  				<div class="form-group">
 							<td></td>
 							<td> <center><%= f.label "Requestor Name: " %></center> </td>
-							<td> <center><%= f.label current_user.empname %></center> </td>
+							<td> <center><%= f.label current_user.empname %>
+								<%= f.hidden_field(:user_id, value: current_user.id) %>
+							</center> </td>
 							<td></td>
 							<td></td>
 							<td> <center><%= f.label "Approving officer: " %></center> </td>
 							<td>
 								<% @current_officer = Officer.select("*").where(:department_id => current_user.department_id) %>
 									<% @current_officer.each do |co| %>
-										<center><%= f.label co.user.empname %></center>
+										<center><%= f.label co.user.empname %>
+											<%= f.hidden_field(:officer_id, value: co.id) %>
+										</center>
 									<%end%>
 							</td>
 							<td></td>
@@ -46,7 +53,8 @@
 		  				<div class="form-group">
 							<td></td>
 		  					<td> <center><%= f.label "Designation:" %></center> </td>
-		  					<td> <center><%= f.label current_user.designation.name %></center> </td>
+		  					<td> <center><%= f.label current_user.designation.name %>
+		  					</center> </td>
 							<td></td>
 							<td></td>
 		  					<td> <center><%= f.label "Designation:" %></center> </td>
@@ -66,7 +74,13 @@
 		  				<div class="form-group">
 							<td></td>
 		  					<td> <center><%= f.label "Department:" %></center> </td>
-		  					<td> <center><%= f.label current_user.department.name %></center> </td>
+		  					<td> <center><%= f.label current_user.department.name %>
+		  						
+								<%= f.hidden_field(:department_id, value: current_user.department_id) %>
+								<%= f.hidden_field(:status, value: "Pending") %>
+								<% time = Time.now %>
+								<%= f.hidden_field(:date_created, value: time.to_formatted_s(:db)) %>
+		  					</center></td>
 							<td></td>
 							<td></td>
 		  					<td> <center><%= f.label "Department:" %></center> </td>
@@ -79,7 +93,7 @@
 		  				</div>
 		  			</div>
 				</tr>
-				<tr>
+				<!-- <tr>
 					<td></td>
 					<td></td>
 					<td></td>
@@ -95,9 +109,11 @@
 							</div>
 						</div>
 					</td>
-				</tr>
+				</tr> -->
 	  		</thead>
 	  		<tbody class="dynamic" id="pda-details">
+	  		<% @request_line.each do |s| %>
+	  		<%= f.fields_for :request_lines, @request.request_lines.build do |rl| %>
 				<tr>
 					<div class="row">
 		  				<div class="form-group">
@@ -107,40 +123,41 @@
 		  						</center> </td>
 							<td> 
 								<center>
-									<%= collection_select(:type_ids, Type.all, :id, :name, {include_blank: 'Please Select'}, class: "dyn-input") %>
+									<%= rl.collection_select(:type_id, Type.all, :id, :name, {include_blank: 'Please Select'}, class: "dyn-input") %>
 								</center> 
 							</td>
-		  					<td> <center><%= f.label "Product:" %></center> </td>
+		  					<td> <center><%= rl.label "Product:" %></center> </td>
 							<td> 
 								<center>
-									<%= collection_select(:product_ids, Product.all, :id, :name, {include_blank: 'Please Select'}, class: "dyn-input")%>
+									<%= rl.collection_select(:product_id, Product.all, :id, :name, {include_blank: 'Please Select'}, class: "dyn-input")%>
 								</center> 
 							</td>
-			  				<td> <center><%= f.label "Quantity:" %></center> </td>
+			  				<td> <center><%= rl.label "Quantity:" %></center> </td>
 			  				<td> 
 								<div class="col-sm-8">
-									<%= text_field :qty, placeholder: "Enter Qty", autofocus: true, value: ""%>
+									<%= rl.text_field :qty, placeholder: "Enter Qty", autofocus: true, value: ""%>
 								</div> 
 							</td>
-			  				<td> <center><%= f.label "Unit:"%></center> </td>
+			  				<td> <center><%= rl.label "Unit:"%></center> </td>
 							<td> 
 								<center>
-									<%= collection_select(:unit_ids, Unit.all, :id, :name, {include_blank: 'Please Select'}, class: "dyn-input") %>
+									<%= rl.collection_select(:unit_id, Unit.all, :id, :name, {include_blank: 'Please Select'}, class: "dyn-input") %>
 								</center> 
 							</td>
-							<td>
+							<!-- <td>
 								<div class="form-group">
 									<div class="col-sm-offset-1 col-sm-8">
 										<center>
 											<input class="add" data-table="pda-details" type="button" value="Remove" id="del-row"/>
 										</center>
 									</div>
-							</td>
+							</td> -->
 		  				</div>
 			  		</div>
 				</tr>
+			<%end%>
+			<%end%>
 			</tbody>
-
 			<tfoot>
 				<tr>
 					<div class="form-group">
@@ -165,4 +182,4 @@
 			</tfoot>
 		</table>
 	</div>
-<% end %>
+<%end%>

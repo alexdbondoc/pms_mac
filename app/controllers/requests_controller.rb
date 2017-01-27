@@ -6,27 +6,43 @@ class RequestsController < ApplicationController
 	end
   
 	def new
-	    @request = Request.new()
+	  @request = Request.new
+    @request_line = []
+    5.times do
+      @request_line << RequestLine.new
+    end
 	end
   
   def create
     time = Time.now 
-    @request = Request.new(request_params)
-    @request.user_id = current_user.id
-    @request.status = "Pending"
-    @request.department_id = current_user.department_id
-    @request.date_created = time.to_formatted_s(:db)
-    @current_officer = Officer.where(:department_id => current_user.department_id) 
-      @current_officer.each do |co| 
-      	@officer = co.id
+    for i in 0..4
+      if params[:request][:request_lines_attributes[i]] == ""
+        params[:request][:request_lines_attributes[i]].delete
+      else
+
       end
+    end
+    @request = Request.new(request_params)
+    # @request.user_id = current_user.id
+    # @request.status = "Pending"
+    # @request.department_id = current_user.department_id
+    # @request.date_created = time.to_formatted_s(:db)
+    # @current_officer = Officer.where(:department_id => current_user.department_id) 
+    #   @current_officer.each do |co| 
+    #   	@officer = co.id
+    #   end
+    # @request.officer_id = @officer
+    # @rl = RequestLine.new()
+    # raise params.inspect
   	if @request.save 
-      raise params
-      # @rl = @request.request_lines.new
-      # @rl.product_id = request_params[:product_ids]
-      # @rl.type_id = request_params[:type_ids]
-      # @rl.unit_id = request_params[:unit_ids]
-      # raise request_params.inspect
+      # request_params[request_lines_attributes: [:request_id]] = @request.id
+      # @rl.request_id = Request.last().id
+      # raise params
+      # @rl.product_id = request_params[:product_id]
+      # @rl.type_id = request_params[:type_id]
+      # @rl.unit_id = request_params[:unit_id]
+      # @rl.qty = request_params[:qty]
+      # # rais request_params.inspect
       # @rl.save
   	    flash[:success] = "Request was created successfully"
 		    redirect_to requests_path
@@ -84,6 +100,7 @@ class RequestsController < ApplicationController
   	end
 
   	def destroy
+      @request = Request.find(params[:id])
 	    @request.destroy
 	    flash[:danger] = "Request was successfully deleted"
 	    redirect_to requests_path
@@ -91,7 +108,8 @@ class RequestsController < ApplicationController
 
   	private
     	def request_params
-      	params.require(:request).permit(:category_id, :user_id, :officer_id, :reason, :status, :department_id, :type_ids, :product_ids, :unit_ids)
+      	params.require(:request).permit(:category_id, :user_id, :officer_id, :date_created, :reason, :status, :department_id,
+         request_lines_attributes: [:request_id, :product_id, :request_id, :type_id, :unit_id, :qty])
     	end
     
       def require_same_user
