@@ -9,32 +9,18 @@
       <th><center>Requested <br> By</center></th>
       <th><center>Department</center></th>
       <th><center>Approving <br> Officer</center></th>
-      <th><center>Product <br> Type</center></th>
-      <th><center>Product <br> Description</center></th>
-      <th><center>Quantity</center></th>
       <th><center>Purpose</center></th>
       <th><center>Status</center></th>
     </thead>
 
     <tbody>
       <%= will_paginate %>
-        <% @requests.each do |r| %>
-          <% @requestor = r.user_id %>
-          <% @officer = r.officer.user_id %>
-        <%end%>
-
-        <% if logged_in? && (current_user.id == @requestor && current_user.id != @officer) %>
-
-          <% @request_list = Request.select("*").where(:user_id => @requestor) %>
-            <% @request_list.each do |req| %>
+            <% @requests.each do |req| %>
             <tr>
               <td align="center"><%= req.category.name %></td>
               <td align="center"><%= req.user.empname %></td>
               <td align="center"><%= req.department.name %></td>
               <td align="center"><%= req.officer.user.empname %></td>
-              <td align="center"><%= req.type.name %></td>
-              <td align="center"><%= req.product.name %></td>
-              <td align="center"><%= pluralize(req.qty, "#{req.unit.name}") %> </td>
               <td align="center"><%= truncate(req.reason, length: 25) %></td>
               <td align="center"><%= req.status %></td>
               <% if req.status == "Pending" %>
@@ -46,42 +32,7 @@
                 </td>
               <% end %>
             </tr>
-          <%end%>
-
-          <%elsif logged_in? && (current_user.id == @officer) %>
-              
-          <% @request_list = Request.select("*").where(:department_id => current_user.department_id).order(id: :desc) %>
-            <% @request_list.each do |req| %>
-            <tr>
-              <td align="center"><%= req.category.name %></td>
-              <td align="center"><%= req.user.empname %></td>
-              <td align="center"><%= req.department.name %></td>
-              <td align="center"><%= req.officer.user.empname %></td>
-              <td align="center"><%= req.type.name %></td>
-              <td align="center"><%= req.product.name %></td>
-              <td align="center"><%= pluralize(req.qty, "#{req.unit.name}") %> </td>
-              <td align="center"><%= truncate(req.reason, length: 25) %></td>
-              <td align="center"><%= req.status %></td>
-              <% if req.status == "Pending" %>
-                <td>
-                  <%= link_to "View", request_path(req),
-                                data: {confirm: "Are you sure you want to view this request?"}, 
-                                class: "btn btn-xs btn-primary" %>
-                  <%= link_to "Approve", request_path(req), method: :put, 
-                                data: {confirm: "Are you sure you want to approve this request?"}, 
-                                class: "btn btn-xs btn-success" %>
-                </td>
-              <% elsif req.status == "Approved" %>
-                <td>
-                  <%= link_to "Consolidate", request_path(req), method: :put, 
-                                data: {confirm: "Are you sure you want to consolidate this request?"}, 
-                                class: "btn btn-xs btn-success" %>
-                </td>
-              <% end %>
-            </tr>
-          <%end%>
-
-        <%end%>        
+          <%end%>      
       <%= will_paginate %>
     </tbody>
 

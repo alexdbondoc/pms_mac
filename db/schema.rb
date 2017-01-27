@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170123024032) do
+ActiveRecord::Schema.define(version: 20170126091724) do
 
   create_table "categories", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "name"
@@ -40,17 +40,24 @@ ActiveRecord::Schema.define(version: 20170123024032) do
     t.integer "type_id"
   end
 
+  create_table "qties", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.integer "request_id"
+    t.string  "qty"
+  end
+
+  create_table "request_lines", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.integer "request_id"
+    t.integer "type_id"
+    t.integer "product_id"
+    t.integer "unit_id"
+  end
+
   create_table "requests", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer  "category_id"
     t.integer  "user_id"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
+    t.datetime "date_created"
     t.integer  "officer_id"
     t.integer  "department_id"
-    t.integer  "type_id"
-    t.integer  "product_id"
-    t.integer  "qty"
-    t.integer  "unit_id"
     t.string   "reason"
     t.string   "status"
   end

@@ -1,124 +1,168 @@
+
 <%= render 'share/errors', obj: @request %>
-<div class="panel panel-default">
-  <!-- Default panel contents -->
-  	<div class="panel-heading center"><strong>Property Management System Requisition of Equipments</strong></div>
-	<%= form_for(@request, :html => {class: "form-horizontal", role: "form"}) do |f| %>
-  <!-- Table -->
-  	<table class="table">
-		<tr>
-  		<div class="row">
-  			<div class="form-group">
-			  	<td></td>
+<%= form_for @request do |f| %>
+	<div class="panel panel-default">
+  	<!-- Default panel contents -->
+  		<div class="panel-heading center"><strong>Requisition of Equipments Form</strong></div>
+  		<!-- Table -->
+  		<table class="table">
+	  		<thead>
+	  			<tr>
+			  		<div class="row">
+			  			<div class="form-group">
+							<td></td>
+							<td></td>
+							<td></td>
+							<td> <center><%= f.label "Select request type: " %></center> </td>
+							<td> <center><%= f.collection_select(:category_id, Category.all, :id, :name) %></center> </td>
+						  	<td></td>
+							<td></td>
+						</div>
+					</div>
+				</tr>
 
-				<td>
-					<%= f.label "Select request type: " %>
-				</td>
+				<tr>
+					<div class="row">
+		  				<div class="form-group">
+							<td></td>
+							<td> <center><%= f.label "Requestor Name: " %></center> </td>
+							<td> <center><%= f.label current_user.empname %></center> </td>
+							<td></td>
+							<td></td>
+							<td> <center><%= f.label "Approving officer: " %></center> </td>
+							<td>
+								<% @current_officer = Officer.select("*").where(:department_id => current_user.department_id) %>
+									<% @current_officer.each do |co| %>
+										<center><%= f.label co.user.empname %></center>
+									<%end%>
+							</td>
+							<td></td>
+						</div>
+					</div>
+				</tr>
 
-				<td>
-					<%= f.collection_select(:category_id, Category.all, :id, :name) %>
-				</td>
+				<tr>
+					<div class="row">
+		  				<div class="form-group">
+							<td></td>
+		  					<td> <center><%= f.label "Designation:" %></center> </td>
+		  					<td> <center><%= f.label current_user.designation.name %></center> </td>
+							<td></td>
+							<td></td>
+		  					<td> <center><%= f.label "Designation:" %></center> </td>
+		  					<td> 
+		  						<% @current_officer = Officer.select("*").where(:department_id => current_user.department_id) %>
+									<% @current_officer.each do |co| %>
+										<center><%= f.label co.designation.name %></center>
+									<%end%>
+		  					</td>
+							<td></td>
+		  				</div>
+		  			</div>
+				</tr>
 
-				<td></td>
-
-			</div>
-		</div>
-
-		 </tr>
-
-		  		<tr>
-		  			
-					<td>
-						<%= f.label "Employee Name: " %>
+				<tr>
+					<div class="row">
+		  				<div class="form-group">
+							<td></td>
+		  					<td> <center><%= f.label "Department:" %></center> </td>
+		  					<td> <center><%= f.label current_user.department.name %></center> </td>
+							<td></td>
+							<td></td>
+		  					<td> <center><%= f.label "Department:" %></center> </td>
+		  					<td> 
+		  						<% @current_officer = Officer.select("*").where(:department_id => current_user.department_id) %>
+									<% @current_officer.each do |co| %>
+										<center><%= f.label co.department.name %></center>
+									<%end%>
+		  					</td>
+		  				</div>
+		  			</div>
+				</tr>
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td colspan=12>
+						<div class="form-group">
+							<div class="col-sm-offset-1 col-sm-12">
+								<center>
+									<input class="add" data-table="pda-details" type="button" value="Add Table Row" id="add-row"/>
+								</center>
+							</div>
+						</div>
 					</td>
+				</tr>
+	  		</thead>
+	  		<tbody class="dynamic" id="pda-details">
+				<tr>
+					<div class="row">
+		  				<div class="form-group">
+		  					<td> 
+		  						<center>
+		  							<label class="dyn-input" id="type_label[0]" name="type_label[1]">Product Type:</label>
+		  						</center> </td>
+							<td> 
+								<center>
+									<%= collection_select(:type_ids, Type.all, :id, :name, {include_blank: 'Please Select'}, class: "dyn-input") %>
+								</center> 
+							</td>
+		  					<td> <center><%= f.label "Product:" %></center> </td>
+							<td> 
+								<center>
+									<%= collection_select(:product_ids, Product.all, :id, :name, {include_blank: 'Please Select'}, class: "dyn-input")%>
+								</center> 
+							</td>
+			  				<td> <center><%= f.label "Quantity:" %></center> </td>
+			  				<td> 
+								<div class="col-sm-8">
+									<%= text_field :qty, placeholder: "Enter Qty", autofocus: true, value: ""%>
+								</div> 
+							</td>
+			  				<td> <center><%= f.label "Unit:"%></center> </td>
+							<td> 
+								<center>
+									<%= collection_select(:unit_ids, Unit.all, :id, :name, {include_blank: 'Please Select'}, class: "dyn-input") %>
+								</center> 
+							</td>
+							<td>
+								<div class="form-group">
+									<div class="col-sm-offset-1 col-sm-8">
+										<center>
+											<input class="add" data-table="pda-details" type="button" value="Remove" id="del-row"/>
+										</center>
+									</div>
+							</td>
+		  				</div>
+			  		</div>
+				</tr>
+			</tbody>
 
-					<td>
-						<%= f.label current_user.empname %>
+			<tfoot>
+				<tr>
+					<div class="form-group">
+					    <td> <center><%= f.label "Purpose:" %></center> </td>
+					    <td colspan=8>
+					    	<div class="col-sm-12">
+								<%= f.text_area :reason, rows: 3, class: "form-control", placeholder: "Reason for requesition of item" %>
+					    	</div>
+					    </td>
+				    </div>
+				</tr>
+
+				<tr>
+					<td colspan=8>
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-8">
+								<center><%= f.submit(@request.new_record? ? "Generate Request" : "Update Request", class: "btn btn-primary btn-lg")%></center>
+							</div>
+						</div>
 					</td>
-
-					<td>
-							<%= f.label "Approving officer: " %>
-					</td>
-
-					<td>
-						<% @current_officer = Officer.select("*").where(:department_id => current_user.department_id) %>
-							<% @current_officer.each do |co| %>
-								<%= f.label co.user.empname %>
-							<%end%>
-					</td>
-
-		  		</tr>
-
-		  	</div>
-
-				<div class="form-group">
-					<div class="control-label col-sm-2">
-						<%= f.label "Department" %>
-					</div>
-
-					<div class="col-sm-8">
-						<%= f.label "#{current_user.department.name}" %>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<div class="control-label col-sm-2">
-						<%= f.label "Product Type to Request" %>
-					</div>
-
-					<div class="col-sm-8">
-						<%= f.collection_select(:type_id, Type.all, :id, :name) %>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<div class="control-label col-sm-2">
-						<%= f.label "Product to Request" %>
-					</div>
-
-					<div class="col-sm-8">
-						<%= f.collection_select(:product_id, Product.all, :id, :name) %>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<div class="control-label col-sm-2">
-						<%= f.label "Product to Request" %>
-					</div>
-
-					<div class="col-sm-8">
-						<%= f.text_field :qty, class: "form-control", placeholder: "Enter Quantity", autofocus: true %>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<div class="control-label col-sm-2">
-						<%= f.label "Product to Request" %>
-					</div>
-
-					<div class="col-sm-8">
-						<%= f.collection_select(:unit_id, Unit.all, :id, :name) %>
-					</div>
-				</div>
-
-			      <div class="form-group">
-			        <div class="control-label col-sm-2">
-			          <%= f.label :purpose %>
-			        </div>
-			        <div class="col-sm-8">
-			          <%= f.text_area :reason, rows: 3, class: "form-control", placeholder: "Reason for requesition of item" %>
-			        </div>
-			      </div>
-
-				<div class="form-group">
-					<div class="col-sm-offset-2 col-sm-10">
-						<%= f.submit(@request.new_record? ? "Generate Request" : "Update Request", class: "btn btn-primary btn-lg") %>
-					</div>
-				</div>
-			<% end %>
-			<div class="col-xs-4 col-xs-offset-4">
-				[ <%= link_to "Cancel request and return to Home page", root_path %> ]
-			</div>
-		</div>
+				</tr>
+			</tfoot>
+		</table>
 	</div>
-	</table>
-</div>
+<% end %>

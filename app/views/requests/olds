@@ -1,0 +1,126 @@
+<tbody>
+				<tr>
+			  		<div class="row">
+			  			<div class="form-group">
+							<td></td>
+							<td></td>
+							<td> <center><%= f.label "Select request type: " %></center> </td>
+							<td> <center><%= f.collection_select(:category_id, Category.all, :id, :name) %></center> </td>
+						  	<td></td>
+							<td></td>
+						</div>
+					</div>
+				</tr>
+
+				<tr>
+					<div class="row">
+		  				<div class="form-group">
+							<td></td>
+							<td> <center><%= f.label "Requestor Name: " %></center> </td>
+							<td></td>
+							<td> <center><%= f.label current_user.empname %></center> </td>
+							<td></td>
+							<td> <center><%= f.label "Approving officer: " %></center> </td>
+							<td></td>
+							<td>
+								<% @current_officer = Officer.select("*").where(:department_id => current_user.department_id) %>
+									<% @current_officer.each do |co| %>
+										<center><%= f.label co.user.empname %></center>
+									<%end%>
+							</td>
+						</div>
+					</div>
+				</tr>
+
+				<tr>
+					<div class="row">
+		  				<div class="form-group">
+							<td></td>
+		  					<td> <center><%= f.label "Designation:" %></center> </td>
+							<td></td>
+		  					<td> <center><%= f.label current_user.designation.name %></center> </td>
+							<td></td>
+		  					<td> <center><%= f.label "Designation:" %></center> </td>
+							<td></td>
+		  					<td> 
+		  						<% @current_officer = Officer.select("*").where(:department_id => current_user.department_id) %>
+									<% @current_officer.each do |co| %>
+										<center><%= f.label co.designation.name %></center>
+									<%end%>
+		  					</td>
+							<td></td>
+		  				</div>
+		  			</div>
+				</tr>
+
+				<tr>
+					<div class="row">
+		  				<div class="form-group">
+		  					<td> <center><%= f.label "Department:" %></center> </td>
+		  					<td> <center><%= f.label current_user.department.name %></center> </td>
+							<td></td>
+							<td></td>
+		  					<td> <center><%= f.label "Department:" %></center> </td>
+		  					<td> 
+		  						<% @current_officer = Officer.select("*").where(:department_id => current_user.department_id) %>
+									<% @current_officer.each do |co| %>
+										<center><%= f.label co.department.name %></center>
+									<%end%>
+		  					</td>
+		  				</div>
+		  			</div>
+				</tr>
+
+				<% for i in 0..10 %>
+					<tr>
+						<div class="row">
+			  				<div class="form-group">
+			  					<td> <center><%= f.label "Product Type:" %></center> </td>
+								<td> 
+									<center>
+										<%= select("post", "type_id", Type.all.collect {|t| [ t.name, t.id ] }, {include_blank: 'Please Select'}) %>
+									</center> 
+								</td>
+			  					<td> <center><%= f.label "Product:" %></center> </td>
+								<td> 
+									<center>
+										<%= select("post", "product_id", Product.all.collect {|p| [ p.name, p.id ] }, {include_blank: 'Please Select'}) %>
+									</center> 
+								</td>
+			  					<td> <center><%= f.label "Quantity:" %></center> </td>
+			  					<td> 
+			  						<div class="col-sm-8">
+										<%= f.text_field :qty, class: "form-control", placeholder: "Enter Quantity", autofocus: true %>
+									</div> 
+								</td>
+			  					<td> <center><%= f.label "Unit:" %></center> </td>
+								<td> 
+									<center>
+										<%= select("post", "unit_id", Unit.all.collect {|u| [ u.name, u.id ] }, {include_blank: 'Please Select'}) %>
+									</center> 
+								</td>
+			  				</div>
+			  			</div>
+					</tr>
+				<%end%>
+				<tr>
+					<div class="form-group">
+					    <td> <center><%= f.label "Purpose:" %></center> </td>
+					    <td colspan=8>
+					    	<div class="col-sm-12">
+								<%= f.text_area :reason, rows: 3, class: "form-control", placeholder: "Reason for requesition of item" %>
+					    	</div>
+					    </td>
+				    </div>
+				</tr>
+
+				<tr>
+					<td colspan=8>
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-8">
+								<center><%= f.submit(@request.new_record? ? "Generate Request" : "Update Request", class: "btn btn-primary btn-lg") %></center>
+							</div>
+						</div>
+					</td>
+				</tr>
+			</tbody>
