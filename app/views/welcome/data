@@ -1,16 +1,2 @@
-<% if req.status == "Pending" %>
-                <td>
-                  <%= link_to "View", request_path(req),
-                                data: {confirm: "Are you sure you want to view this request?"}, 
-                                class: "btn btn-xs btn-primary" %>
-                  <%= link_to "Approve", request_path(req), method: :put, 
-                                data: {confirm: "Are you sure you want to approve this request?"}, 
-                                class: "btn btn-xs btn-success" %>
-                </td>
-              <% elsif req.status == "Approved" %>
-                <td>
-                  <%= link_to "Consolidate", request_path(req), method: :put, 
-                                data: {confirm: "Are you sure you want to consolidate this request?"}, 
-                                class: "btn btn-xs btn-success" %>
-                </td>
-              <% end %>
+
+                  <%= link_to "Update", edit_request_path(req), class: "btn btn-xs btn-primary" %>

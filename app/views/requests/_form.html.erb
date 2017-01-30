@@ -15,7 +15,7 @@
 							<td> <center><%= f.label "Select request type: " %></center> </td>
 							<td> 
 								<center>
-									<%= f.collection_select(:category_id, Category.all, :id, :name) %>
+									<%= f.collection_select(:category_id, Category.all, :id, :name,  {include_blank: 'Please Select'}) %>
 								</center> 
 							</td>
 						  	<td></td>
@@ -112,7 +112,7 @@
 				</tr> -->
 	  		</thead>
 	  		<tbody class="dynamic" id="pda-details">
-	  		<% @request_line.each do |s| %>
+	  		<% 5.times do %>
 	  		<%= f.fields_for :request_lines, @request.request_lines.build do |rl| %>
 				<tr>
 					<div class="row">
@@ -151,6 +151,7 @@
 											<input class="add" data-table="pda-details" type="button" value="Remove" id="del-row"/>
 										</center>
 									</div>
+								</div>
 							</td> -->
 		  				</div>
 			  		</div>

@@ -8,7 +8,7 @@
 				</div>
 
 				<div class="col-sm-8">
-					<%= f.collection_select(:user_id, User.all, :id, :empname) %>
+					<%= f.collection_select(:user_id, User.all, :id, :empname,  {include_blank: 'Please Select'}) %>
 				</div>
 			</div>
 
@@ -18,7 +18,7 @@
 				</div>
 
 				<div class="col-sm-8">
-					<%= f.collection_select(:department_id, Department.all, :id, :name) %>
+					<%= f.collection_select(:department_id, Department.all, :id, :name,  {include_blank: 'Please Select'}) %>
 				</div>
 			</div>
 
@@ -28,7 +28,7 @@
 				</div>
 
 				<div class="col-sm-8">
-					<%= f.collection_select(:designation_id, Designation.all, :id, :name) %>
+					<%= f.collection_select(:designation_id, Designation.all, :id, :name,  {include_blank: 'Please Select'}) %>
 				</div>
 			</div>
 
