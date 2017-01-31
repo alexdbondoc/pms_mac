@@ -1,3 +1,160 @@
 <h1 align="center">Update Request</h1>
+<%= form_for(@request) do |f| %>
+<%= render 'share/errors', obj: @request %>
+	<div class="panel panel-default">
+  	<!-- Default panel contents -->
+  		<div class="panel-heading center"><strong>Requisition of Equipments Form</strong></div>
+  		<!-- Table -->
+  		<table class="table">
+	  		<thead>
+	  			<tr>
+			  		<div class="row">
+			  			<div class="form-group">	
+							<td></td>
+							<td></td>
+							<td></td>
+							<td> <center><%= f.label "Select request type: " %></center> </td>
+							<td> 
+								<center>
+									<%= f.collection_select(:category_id, Category.all, :id, :name,  {include_blank: 'Please Select'}) %>
+								</center> 
+							</td>
+						  	<td></td>
+							<td></td>
+						</div>
+					</div>
+				</tr>
 
-<%= render 'form' %>
+				<tr>
+					<div class="row">
+		  				<div class="form-group">
+							<td></td>
+							<td> <center><%= f.label "Requestor Name: " %></center> </td>
+							<td> <center><%= f.label current_user.empname %>
+								<%= f.hidden_field(:user_id, value: current_user.id) %>
+							</center> </td>
+							<td></td>
+							<td></td>
+							<td> <center><%= f.label "Approving officer: " %></center> </td>
+							<td>
+								<% @current_officer = Officer.select("*").where(:department_id => current_user.department_id) %>
+									<% @current_officer.each do |co| %>
+										<center><%= f.label co.user.empname %>
+											<%= f.hidden_field(:officer_id, value: co.id) %>
+										</center>
+									<%end%>
+							</td>
+							<td></td>
+						</div>
+					</div>
+				</tr>
+
+				<tr>
+					<div class="row">
+		  				<div class="form-group">
+							<td></td>
+		  					<td> <center><%= f.label "Designation:" %></center> </td>
+		  					<td> <center><%= f.label current_user.designation.name %>
+		  					</center> </td>
+							<td></td>
+							<td></td>
+		  					<td> <center><%= f.label "Designation:" %></center> </td>
+		  					<td> 
+		  						<% @current_officer = Officer.select("*").where(:department_id => current_user.department_id) %>
+									<% @current_officer.each do |co| %>
+										<center><%= f.label co.designation.name %></center>
+									<%end%>
+		  					</td>
+							<td></td>
+		  				</div>
+		  			</div>
+				</tr>
+
+				<tr>
+					<div class="row">
+		  				<div class="form-group">
+							<td></td>
+		  					<td> <center><%= f.label "Department:" %></center> </td>
+		  					<td> <center><%= f.label current_user.department.name %>
+		  						
+								<%= f.hidden_field(:department_id, value: current_user.department_id) %>
+								<%= f.hidden_field(:status, value: "Pending") %>
+								<% time = Time.now %>
+								<%= f.hidden_field(:date_created, value: time.to_formatted_s(:db)) %>
+		  					</center></td>
+							<td></td>
+							<td></td>
+		  					<td> <center><%= f.label "Department:" %></center> </td>
+		  					<td> 
+		  						<% @current_officer = Officer.select("*").where(:department_id => current_user.department_id) %>
+									<% @current_officer.each do |co| %>
+										<center><%= f.label co.department.name %></center>
+									<%end%>
+		  					</td>
+		  				</div>
+		  			</div>
+				</tr>
+	  		</thead>
+	  		<tbody class="dynamic" id="pda-details">
+	  		<%= f.fields_for :request_lines, @request.request_lines do |rl| %>
+				<tr>
+					<div class="row">
+		  				<div class="form-group">
+		  					<td> 
+		  						<center>
+		  							<label class="dyn-input" id="type_label[0]" name="type_label[1]">Product Type:</label>
+		  							<%= f.hidden_field(:request_id, value: @request.id) %>
+		  						</center> </td>
+							<td> 
+								<center>
+									<%= rl.collection_select(:type_id, Type.all, :id, :name, {include_blank: 'Please Select'}, class: "dyn-input") %>
+								</center> 
+							</td>
+		  					<td> <center><%= rl.label "Product:" %></center> </td>
+							<td> 
+								<center>
+									<%= rl.collection_select(:product_id, Product.all, :id, :name, {include_blank: 'Please Select'}, class: "dyn-input")%>
+								</center> 
+							</td>
+			  				<td> <center><%= rl.label "Quantity:" %></center> </td>
+			  				<td> 
+								<div class="col-sm-8">
+									<%= rl.text_field :qty, placeholder: "Enter Qty"%>
+								</div> 
+							</td>
+			  				<td> <center><%= rl.label "Unit:"%></center> </td>
+							<td> 
+								<center>
+									<%= rl.collection_select(:unit_id, Unit.all, :id, :name, {include_blank: 'Please Select'}, class: "dyn-input") %>
+								</center> 
+							</td>
+		  				</div>
+			  		</div>
+				</tr>
+			<%end%>
+			</tbody>
+			<tfoot>
+				<tr>
+					<div class="form-group">
+					    <td> <center><%= f.label "Purpose:" %></center> </td>
+					    <td colspan=8>
+					    	<div class="col-sm-12">
+								<%= f.text_area :reason, rows: 3, class: "form-control", placeholder: "Reason for requesition of item" %>
+					    	</div>
+					    </td>
+				    </div>
+				</tr>
+
+				<tr>
+					<td colspan=8>
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-8">
+								<center><%= f.submit(@request.new_record? ? "Generate Request" : "Update Request", class: "btn btn-primary btn-lg")%></center>
+							</div>
+						</div>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+<%end%>

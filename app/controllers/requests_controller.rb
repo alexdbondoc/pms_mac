@@ -62,46 +62,77 @@ class RequestsController < ApplicationController
 	end
   
   def update
-    flash[:success] = "#{consolidate_action}"
-    redirect_to requests_path
-  	# @requests = Request.where("department_id" => current_user.department_id).order("date_created DESC")
-   #  @requests.each do |req|
-   #    if current_user == req.user
-   #        if req.update(request_params)
+    @request = Request.find(params[:id])
+    if @request.update(request_params)
+      @x = 0
+      @y = @request.request_lines.count;
+      while @x < @y do
+        if params[:request][:request_lines_attributes]["#{@x}"] != ""
+          @type_id = params[:request][:request_lines_attributes]["#{@x}"][:type_id]
+          @product_id = params[:request][:request_lines_attributes]["#{@x}"][:product_id]
+          @qty = params[:request][:request_lines_attributes]["#{@x}"][:qty]
+          @unit_id = params[:request][:request_lines_attributes]["#{@x}"][:unit_id]
+          params = ActionController::Parameters.new({
+            request_line: {
+              request_id: @request.id,
+              type_id: @type_id,
+              product_id: @product_id,
+              qty: @qty,
+              unit_id: @unit_id
+            }
+          })
+          permitted = params.require(:request_line).permit(:request_id, :type_id, :product_id, :qty, :unit_id)
+          @request_line = @request.request_lines.update(permitted)
+          @x +=1
+        end
+      end
+      flash[:success] = "Request was created successfully."
+      redirect_to requests_path
+    else
+      render 'new'
+    end
+    
+  	# @request = Request.find(params[:id])
+   #    if current_user == @request.user
+   #        if @request.update(request_params)
    #        flash[:success] = "Request was successfully updated"
    #        redirect_to requests_path
    #      else
    #        render 'edit'
    #      end
-   #    elsif current_user.id == req.officer.user_id
-   #      if req.status == "Pending"
-   #        req.status = "Approved"
-   #      else
-   #        req.status = "Consolidated"
-   #      end
+   #    elsif current_user.id == @request.officer.user_id
+   #      if params[:approve] != nil
+   #        @request.status = "Approved"
+   #        @status = "Approved"
+   #      elsif params[:consolidate] != nil
+   #        @request.status = "Consolidated"
+   #        @status = "Consolidated"
+   #      elsif params[:disapprove] != nil
+   #        @request.status = "Disapproved"
+   #        @status = "Disapproved"
+   #      end 
    #      params = ActionController::Parameters.new({
    #        request: {
-   #          category_id: req.category_id,
-   #          user_id:  req.user_id,
-   #          officer_id: req.officer_id,
-   #          department_id: req.department_id,
-   #          reason: req.reason,
-   #          status: req.status
+   #          category_id: @request.category_id,
+   #          user_id:  @request.user_id,
+   #          officer_id: @request.officer_id,
+   #          department_id: @request.department_id,
+   #          reason: @request.reason,
+   #          status: @request.status
    #        }
    #      })
    #      permitted = params.require(:request).permit(:category_id, :user_id, :officer_id, :department_id, :reason, :status)
-   #      if req.update(permitted)
-   #        flash[:success] = "Request was successfully approved"
+   #      if @request.update(permitted)
+   #        flash[:success] = "Request was successfully #{@status}"
    #        redirect_to requests_path
    #      else
    #        render 'index'
    #      end
    #    end
-   #  end
 	end
 
   def show
-  	@request = Request.find(params[:id])
+    @request = Request.find(params[:id])
     	#@department_users = @department.users.paginate(page: params[:page], per_page: 5)
 	end
 
@@ -115,7 +146,7 @@ class RequestsController < ApplicationController
 	private
   	def request_params
     	params.require(:request).permit(:category_id, :user_id, :officer_id, :date_created, :reason, :status, :department_id,
-       request_lines_attributes: [:product_id, :type_id, :unit_id, :qty].reject{ |k,v| v.blank? })
+       request_lines_attributes: [:request_id, :product_id, :type_id, :unit_id, :qty].reject{ |k,v| v.blank? })
   	end
     
     def require_same_user

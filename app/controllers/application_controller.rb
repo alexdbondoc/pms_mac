@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
 
-  helper_method :current_user, :logged_in?, :current_desig, :consolidate_action, :approve_action
+  helper_method :current_user, :logged_in?, :current_desig
 
   def current_user
   	@current_user ||= User.find(session[:user_id]) if session[:user_id]
@@ -9,14 +9,6 @@ class ApplicationController < ActionController::Base
 
   def current_desig
     @current_desig ||= Designation.find(current_user.designation_id)
-  end
-
-  def consolidate_action
-    @consolidate_action
-  end
-
-  def approve_action
-    @approve_action
   end
 
   def logged_in?
