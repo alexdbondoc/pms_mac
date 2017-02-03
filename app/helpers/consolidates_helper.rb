@@ -1,0 +1,2 @@
+module ConsolidatesHelper
+end

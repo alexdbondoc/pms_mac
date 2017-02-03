@@ -10,10 +10,32 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170127024038) do
+ActiveRecord::Schema.define(version: 20170203063030) do
 
   create_table "categories", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "name"
+  end
+
+  create_table "consolidate_lines", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.integer "request_id"
+    t.integer "type_id"
+    t.integer "product_id"
+    t.integer "qty"
+    t.integer "unit_id"
+    t.integer "consolidate_id"
+  end
+
+  create_table "consolidates", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.integer  "category_id"
+    t.integer  "user_id"
+    t.integer  "department_id"
+    t.integer  "officer_id"
+    t.datetime "group_head_approve"
+    t.integer  "received_by"
+    t.datetime "ppmd_head_approve"
+    t.string   "purpose"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
   end
 
   create_table "departments", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -38,11 +60,6 @@ ActiveRecord::Schema.define(version: 20170127024038) do
   create_table "products", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string  "name"
     t.integer "type_id"
-  end
-
-  create_table "qties", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.integer "request_id"
-    t.string  "qty"
   end
 
   create_table "request_lines", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|

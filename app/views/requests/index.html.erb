@@ -5,6 +5,10 @@
   <!-- Table -->
   <table class="table">
     <thead>
+      <tr>
+        <td colspan="12" align="center"><%= will_paginate %></td>
+      </tr>
+      <th></th>
       <th><center>Request <br> Type</center></th>
       <th><center>Requested <br> By</center></th>
       <th><center>Date <br> Requester</center></th>
@@ -12,24 +16,41 @@
       <th><center>Approving <br> Officer</center></th>
       <th><center>Purpose</center></th>
       <th><center>Status</center></th>
-      <% @consolidate = "true" %>
       <% if current_user.designation.name == "Department Head" %>
         <th>
-          <%= link_to "Approve All", request_path(@requests, :approve => true), method: :put, 
-                  data: {confirm: "Are you sure you want to approve all Pending requests?"}, 
-                              class: "btn btn-xs btn-primary" %>
-          <%= link_to "Consolidate All", request_path(@requests, :consolidate => true), method: :put,
-                  data: {confirm: "Are you sure you want to consolidate all Pending requests?"}, 
-                              class: "btn btn-xs btn-success" %>
-          <%= link_to "Disapprove All", request_path(@requests, :disapprove => true), method: :put,
-                  data: {confirm: "Are you sure you want to disapprove all Pending requests?"}, 
-                              class: "btn btn-xs btn-danger" %>
+          <% @requests.each do |req| %>
+              <% @request_list = req %>
+          <%end%>
+          <%= form_for(@request_list) do |f| %>
+            <%= hidden_field_tag :request_ids %>
+            <%= f.hidden_field(:category_id, value: @request_list.category_id) %>
+            <%= f.hidden_field(:user_id, value: @request_list.user_id) %>
+            <%= f.hidden_field(:officer_id, value: @request_list.officer_id) %>
+            <%= f.hidden_field(:date_created, value: @request_list.date_created) %>
+            <%= f.hidden_field(:reason, value: @request_list.reason) %>
+            <%= f.hidden_field(:status, value: @request_list.status) %>
+            <%= f.hidden_field(:department_id, value: @request_list.department_id) %>
+            <%= f.fields_for :request_lines, @request_list.request_lines do |rl| %>
+              <%= rl.hidden_field(:type_id, value: @request_list.request_lines) %>
+              <%= rl.hidden_field(:product_id, value: @request_list.request_lines) %>
+              <%= rl.hidden_field(:qty, value: @request_list.request_lines) %>
+              <%= rl.hidden_field(:unit_id, value: @request_list.request_lines) %>
+            <%end%>
+            <%= f.submit :Approve, method: :put, 
+                data: { confirm: "Are you sure you want to approve checked request?" }, 
+                          class: "btn btn-xs btn-primary"  %>
+            <%= f.submit :Consolidate, method: :put, 
+                    data: {confirm: "Are you sure you want to consolidate all Pending requests?"}, 
+                                class: "btn btn-xs btn-success" %>
+            <%= f.submit :Disapprove, method: :put,
+                    data: {confirm: "Are you sure you want to disapprove all Pending requests?"}, 
+                                class: "btn btn-xs btn-danger" %>
+          <%end%>
         </th>
       <% end %>
     </thead>
 
     <tbody>
-      <%= will_paginate %>
         <% @requests.each do |req| %>
           <% if logged_in? && current_user.id == req.user_id %>
             <tr>
@@ -56,6 +77,11 @@
             </tr>
           <% elsif logged_in? && current_user.id == req.officer.user_id %>
             <tr>
+              <td>
+                <%= check_box_tag "request_id[#{req.id}]", req.id, nil, 
+                      {:checked => false, :multiple => true, class: :request_id} %>
+                <% @request_list = "request_id[#{req.id}]" %>
+              </td>
               <td align="center"><%= req.category.name %></td>
               <td align="center"><%= req.user.empname %></td>
               <td align="center"><%= req.date_created.to_formatted_s(:long) %></td>
@@ -68,19 +94,15 @@
                   <%= link_to "View", request_path(req),
                                     data: {confirm: "Are you sure you want to view this request?"}, 
                                       class: "btn btn-xs btn-primary" %>
-                  <%= check_box_tag "request_ids[]", req.id %>
-                </td>
-              <% else %>
-                <td>
-                  <%= check_box_tag "request_ids[]", req.id %>
                 </td>
               <% end %>
             </tr>
             <% else %>
           <%end%>
         <%end%>      
-      <%= will_paginate %>
+      <tr>
+        <td colspan="12" align="center"><%= will_paginate %></td>
+      </tr>
     </tbody>
-
   </table>
 </div>

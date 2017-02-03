@@ -1,6 +1,5 @@
-<h1 align="center">Create new Request</h1>
-<%= form_for(@request) do |f| %>
-<%= render 'share/errors', obj: @request %>
+<%= form_for(@consolidate) do |f| %>
+<%= render 'share/errors', obj: @consolidate %>
 	<div class="panel panel-default">
   	<!-- Default panel contents -->
   		<div class="panel-heading center"><strong>Requisition of Equipments Form</strong></div>
@@ -16,7 +15,8 @@
 							<td> <center><%= f.label "Select request type: " %></center> </td>
 							<td> 
 								<center>
-									<%= f.collection_select(:category_id, Category.all, :id, :name,  {include_blank: 'Please Select'}) %>
+									<strong><%= @category[0][:name] %></strong>
+									<%= f.hidden_field(:category_id, value: @category[0].id) %>
 								</center> 
 							</td>
 						  	<td></td>
@@ -29,7 +29,7 @@
 					<div class="row">
 		  				<div class="form-group">
 							<td></td>
-							<td> <center><%= f.label "Requestor Name: " %></center> </td>
+							<td> <center><%= f.label "Department Head Name: " %></center> </td>
 							<td> <center><%= f.label current_user.empname %>
 								<%= f.hidden_field(:user_id, value: current_user.id) %>
 							</center> </td>
@@ -37,12 +37,9 @@
 							<td></td>
 							<td> <center><%= f.label "Approving officer: " %></center> </td>
 							<td>
-								<% @current_officer = Officer.select("*").where(:department_id => current_user.department_id) %>
-									<% @current_officer.each do |co| %>
-										<center><%= f.label co.user.empname %>
-											<%= f.hidden_field(:officer_id, value: co.id) %>
-										</center>
-									<%end%>
+								<center><strong><%= @officer[0].user.empname %></strong>
+									<%= f.hidden_field(:officer_id, value: @officer[0].id) %>
+								</center>
 							</td>
 							<td></td>
 						</div>
@@ -97,7 +94,7 @@
 	  		</thead>
 	  		<tbody class="dynamic" id="pda-details">
 	  		<% 5.times do %>
-	  		<%= f.fields_for :request_lines, @request.request_lines.build do |rl| %>
+	  		<%= f.fields_for :consolidate_lines, @consolidate.consolidate_lines do |rl| %>
 				<tr>
 					<div class="row">
 		  				<div class="form-group">
@@ -140,7 +137,7 @@
 					    <td> <center><%= f.label "Purpose:" %></center> </td>
 					    <td colspan=8>
 					    	<div class="col-sm-12">
-								<%= f.text_area :reason, rows: 3, class: "form-control", placeholder: "Reason for requesition of item" %>
+								<%= f.text_area :purpose, rows: 3, class: "form-control", placeholder: "Reason for requesition of item" %>
 					    	</div>
 					    </td>
 				    </div>
@@ -150,7 +147,7 @@
 					<td colspan=8>
 						<div class="form-group">
 							<div class="col-sm-offset-2 col-sm-8">
-								<center><%= f.submit(@request.new_record? ? "Generate Request" : "Update Request", class: "btn btn-primary btn-lg")%></center>
+								<center><%= f.submit(@consolidate.new_record? ? "Consolidate Request" : "Update Request", class: "btn btn-primary btn-lg")%></center>
 							</div>
 						</div>
 					</td>
