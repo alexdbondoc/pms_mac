@@ -2,7 +2,7 @@ class DepartmentsController < ApplicationController
   before_action :require_user
 	before_action :require_admin, except: [:index, :show]
 	def index
-	    @departments = Department.paginate(page: params[:page], per_page: 5)
+	    @departments = Department.order("name").paginate(page: params[:page], per_page: 5)
 	end
   
 	  def new

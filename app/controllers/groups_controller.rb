@@ -2,7 +2,7 @@ class GroupsController < ApplicationController
   before_action :require_user
   before_action :require_admin, except: [:index, :show]
 	def index
-	    @groups = Group.paginate(page: params[:page], per_page: 5)
+	    @groups = Group.order("name").paginate(page: params[:page], per_page: 5)
 	end
   
 	  def new

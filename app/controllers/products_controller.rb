@@ -2,7 +2,7 @@ class ProductsController < ApplicationController
   before_action :require_user
 	before_action :require_admin, except: [:index, :show]
   def index
-	    @products = Product.paginate(page: params[:page], per_page: 5)
+	    @products = Product.order("name").paginate(page: params[:page], per_page: 5)
 	end
   
 	  def new

@@ -11,12 +11,14 @@
 			  			<div class="form-group">	
 							<td></td>
 							<td></td>
+							<td></td>
 							<td> 
 								<center>
 									<strong>Request Type: &nbsp <%= @category %></strong>
 									<%= f.hidden_field(:category_id, value: @category_id) %>
 								</center> 
 							</td>
+							<td> </td>
 							<td> </td>
 							<td></td>
 						</div>
@@ -25,6 +27,8 @@
 
 				<tr>
 					<th><center>Requestor Info</center></th>
+					<th></th>
+					<th><center>IT Specs Inspector</center></th>
 					<th></th>
 					<th><center>Approver Info</center></th>
 					<th></th>
@@ -39,6 +43,15 @@
 									<%= f.label current_user.empname %>
 									<%= f.hidden_field(:user_id, value: current_user.id) %>
 								</center> 
+							</td>
+							<td></td>
+							<td>
+								<center>
+									<%@itd.each do |itd|%>
+										<strong><%= itd.empname %></strong>
+										<%= f.hidden_field(:inspected_by, value: itd.id) %>
+									<%end%>
+								</center>
 							</td>
 							<td></td>
 							<td>
@@ -67,6 +80,14 @@
 		  				<div class="form-group">
 		  					<td> <center><%= f.label current_user.designation.name %> </center> </td>
 							<td></td>
+							<td>
+								<center> 
+		  							<% @itd.each do |itd| %>
+		  								<strong><%= itd.designation.name %></strong> 
+		  							<%end%>
+		  						</center>
+							</td>
+							<td></td>
 		  					<td> 
 		  						<center> 
 		  							<% @grp.each do |g| %>
@@ -94,6 +115,14 @@
 								<%= f.hidden_field(:status, value: "Pending") %>
 		  					</center></td>
 							<td></td>
+							<td>
+								<center> 
+		  							<% @itd.each do |itd| %>
+		  								<strong><%= itd.department.name %></strong> 
+		  							<%end%>
+		  						</center>
+							</td>
+							<td></td>
 		  					<td> 
 								<center> 
 									<% @grp.each do |g| %>
@@ -115,7 +144,9 @@
 				<tr>
 					<td></td>
 					<td></td>
+					<td></td>
 					<td><center><strong>Request Contents</strong></center></td>
+					<td></td>
 					<td></td>
 					<td></td>
 				</tr>
@@ -125,6 +156,7 @@
 					<th><center><strong>Quantity</strong></center></th>
 					<th><center><strong>Unit</strong></center></th>
 					<th><center><strong>Requestor Name</strong></center></th>
+					<th colspan="2"><center><strong>Specification</strong></center></th>
 				</tr>
 	  		</thead>
 	  		<tbody class="dynamic" id="pda-details">
@@ -164,6 +196,7 @@
 								<td>
 									<center><strong><%= rl.request.user.empname %></strong></center>
 								</td>
+								<td colspan="2"> </td>
 			  				</div>
 				  		</div>
 					</tr>

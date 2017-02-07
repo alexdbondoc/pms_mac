@@ -3,7 +3,7 @@ class UsersController < ApplicationController
 	before_action :set_user, only: [:edit, :update, :show]
   before_action :require_admin, except: [:index, :show]
   def index
-    @users = User.paginate(page: params[:page], per_page: 5)
+    @users = User.order("empname").paginate(page: params[:page], per_page: 5)
   end
   def new
 		@user = User.new()

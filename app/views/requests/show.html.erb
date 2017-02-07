@@ -6,7 +6,11 @@
 				<li><strong>Requested by:</strong></li>
 				<li class="article-title"> <%= link_to @request.user.empname, user_path(@request.user) %> </li>
 				<li> <b><%= @request.department.name %> Department </b></li>
-				<li><small><%= pluralize(@request.user.requests.count, "Request") if @request.user.requests %></small></li>
+				<li>
+					<small>
+						<%= pluralize(@request.user.requests.count, "Request") if @request.user.requests %>
+					</small>
+				</li>
 				<li><strong>Approving Officer: <%= @request.officer.user.empname %></strong></li>
 			</div>
 		</div>
@@ -36,15 +40,17 @@
 		<%= link_to "View all requests", requests_path, class: "btn btn-xs btn-success" %>
 		<% if logged_in? && current_user.id == @request.user_id %>
 			<%= link_to "Update", edit_request_path(@request), 
-                                    data: {confirm: "Are you sure you want to update this request?"}, 
-                                      class: "btn btn-xs btn-primary" %>
+               	data: {confirm: "Are you sure you want to update this request?"}, 
+                    class: "btn btn-xs btn-primary" %>
 			<%= link_to "Delete", request_path(@request), method: :delete, 
-                            data: {confirm: "Are you sure you want to delete this request?"}, 
-               		        class: "btn btn-xs btn-danger" %>
+                data: {confirm: "Are you sure you want to delete this request?"}, 
+               		class: "btn btn-xs btn-danger" %>
 		<% elsif logged_in? && (current_user.id == @request.officer.user_id) %>
-			<%= link_to "Approve", request_path(@request), method: :put, 
-                            data: {confirm: "Are you sure you want to approve this request?"}, 
-               		        class: "btn btn-xs btn-success" %>
+			<%if @request == "Pending" %>
+				<%= link_to "Approve", request_path(@request), method: :put, 
+	                data: {confirm: "Are you sure you want to approve this request?"}, 
+	               		class: "btn btn-xs btn-success" %>
+	        <%end%>
 		<% end %>
 		</div>
 	</hr>

@@ -167,19 +167,8 @@ class RequestsController < ApplicationController
           flash[:danger] = "Please select request/s to be Consolidated"
           redirect_to requests_path
         else
-          while i < @x
-            @request = Request.find(arr[i])
-            params = ActionController::Parameters.new({
-                request: {
-                  status: "Consolidated"
-                }
-              })
-            # permitted = params.require(:request).permit(:status)
-            # @request.update(permitted)
-            i +=1
-          end
           # raise request_params.inspect
-          redirect_to new_consolidate_path(:request_id => arr)
+          redirect_to new_consolidate_path(:request_ids => arr)
         end
       end
     else

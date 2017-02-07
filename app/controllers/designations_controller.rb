@@ -2,7 +2,7 @@ class DesignationsController < ApplicationController
   before_action :require_user
 	before_action :require_admin, except: [:index, :show]
   def index
-	    @designations = Designation.paginate(page: params[:page], per_page: 5)
+	    @designations = Designation.order("name").paginate(page: params[:page], per_page: 5)
 	end
   
 	  def new

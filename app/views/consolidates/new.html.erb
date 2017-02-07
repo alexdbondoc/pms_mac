@@ -1,3 +1,6 @@
 <h1 align="center">Consolidate Request</h1>
-
-<%= render 'form' %>
+<%if @category == "IT Equipment"%>
+	<%= render 'it' %>
+<%else%>
+	<%= render 'form' %>
+<%end%>

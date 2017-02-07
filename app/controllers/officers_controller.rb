@@ -2,7 +2,7 @@ class OfficersController < ApplicationController
   before_action :require_user
 	before_action :require_admin, except: [:index, :show]
 	def index
-	    @officers = Officer.paginate(page: params[:page], per_page: 5)
+	    @officers = Officer.joins(:user).order("users.empname").paginate(page: params[:page], per_page: 5)
 	end
   
 	def new

@@ -1,0 +1,138 @@
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading center"><strong>List of Consolidated Requests</strong></div>
+
+  <!-- Table -->
+  <table class="table">
+  	<thead>
+  		<tr>
+        <td><%= will_paginate %></td></tr>
+	    <th></th>
+	    <th><center>Request <br> Type</center></th>
+	    <th><center>Consolidated <br> By</center></th>
+	    <th><center>Date <br> Requested</center></th>
+	    <th><center>Department</center></th>
+	    <th><center>IT Specs <br> Inspector</center></th>
+	    <th><center>Date <br> Inspected</center></th>
+	    <th><center>Approving <br> Officer</center></th>
+	    <th><center>Date <br> Approved</center></th>
+	    <th><center>Recieving <br> Officer</center></th>
+	    <th><center>Date <br> Received</center></th>
+	    <th><center>Purpose</center></th>
+	    <th><center>Status</center></th>
+	    <% @consolidates.each do |req| %>
+	        <% @cons_list = req %>
+        <%end%>
+        <%if @cons_list != nil%>
+		    <%= form_for(@cons_list) do |f| %>
+		        <%= hidden_field_tag :cons_ids %>
+		        <%= f.hidden_field(:category_id, value: @cons_list.category_id) %>
+		        <%= f.hidden_field(:user_id, value: @cons_list.user_id) %>
+	            <%= f.hidden_field(:officer_id, value: @cons_list.officer_id) %>
+	            <%= f.hidden_field(:purpose, value: @cons_list.purpose) %>
+	            <%= f.hidden_field(:department_id, value: @cons_list.department_id) %>
+	        	<%= f.fields_for :consolidate_lines, @cons_list.consolidate_lines do |rl| %>
+	              <%= rl.hidden_field(:type_id, value: @cons_list.consolidate_lines) %>
+	              <%= rl.hidden_field(:product_id, value: @cons_list.consolidate_lines) %>
+	              <%= rl.hidden_field(:qty, value: @cons_list.consolidate_lines) %>
+	              <%= rl.hidden_field(:unit_id, value: @cons_list.consolidate_lines) %>
+	            <%end%>
+	            <%if logged_in? && current_user.designation.name == "Group Head"%>
+	            	<th>
+	            		<%= f.submit "Approve", method: :put,  
+	                        data: { confirm: "Are you sure you want to approve this request?" }, 
+	           		        	class: "btn btn-xs btn-success" %>
+	            		<%= f.submit "Disapprove", method: :put, 
+	                        data: { confirm: "Are you sure you want to disapprove this request?" }, 
+	           		        	class: "btn btn-xs btn-danger" %>
+	            	</th>
+			    <%elsif logged_in? && (current_user.designation.name == "Department Head" && 
+			    		current_user.department.name == "Property and Procurement")%>
+			    	<th>
+			    		<%= f.submit "Receive", method: :put, 
+			                data: { confirm: "Are you sure you want to receive checked request?" }, 
+			                          class: "btn btn-xs btn-primary"  %> 
+			    		<%= f.submit "Make PR", method: :put, 
+			                data: { confirm: "Are you sure you want to make PR checked request?" }, 
+			                          class: "btn btn-xs btn-success"  %>
+			    		<%= f.submit "Reject", method: :put, 
+			                data: { confirm: "Are you sure you want to reject checked request?" }, 
+			                          class: "btn btn-xs btn-danger"  %>
+			    	</th>
+			   	<%elsif logged_in? && (current_user.designation.name == "Department Head" && 
+			    		current_user.department.name == "IT Department")%>
+			    	<th></th>
+			    	<th></th>
+			   	<%else%>
+			   		<th></th>
+			    	<th></th>
+		        <%end%>
+		    <%end%>
+        <%end%>
+  	</thead>
+  	<tbody>
+  		<% @consolidates.each do |cons| %>
+  			<tr>
+  				<td>
+  					<%if current_user.designation.name == "Group Head" || current_user.department.name == "Property and Procurement"%>
+			            <%= check_box_tag "cons_id[#{cons.id}]", cons.id, nil, 
+			                    {:checked => false, :multiple => true, class: :cons_id} %>
+			        <%end%>
+		        </td>
+				<td><center><strong><%= cons.category.name %></strong></center></td>
+		  		<td><center><strong><%= cons.user.empname%></strong></center></td>
+				<td><center><strong><%= cons.created_at.to_date.to_formatted_s(:long)%></strong></center></td>
+	  			<td><center><strong><%= cons.department.name%></strong></center></td>
+	  			<%if cons.inspected_by != nil%>
+		  			<% @inspector = User.where("id" => cons.inspected_by) %>
+		  				<%@inspector.each do |i|%>
+							<td><center><strong><%= i.empname %></strong></center></td>
+		  				<%end%>
+		  		<%else%>
+		  			<td></td>
+		  		<%end%>
+	  			<td>
+	  				<%if cons.inspected_date != nil%>
+						<center>
+	  						<strong><%= cons.inspected_date.to_date.to_formatted_s(:long) %></strong>
+		  				</center>
+		  			<%end%>
+	  			</td>
+		  		<td><center><strong><%= cons.officer.user.empname%></strong></center></td>
+		  		<td>
+		  			<%if cons.group_head_approve != nil%>
+						<center>
+	  						<strong><%= cons.group_head_approve.to_date.to_formatted_s(:long) %></strong>
+		  				</center>
+		  			<%end%>
+		  		</td>
+		  		<% @receiver = User.where("id" => cons.received_by) %>
+		  			<%@receiver.each do |r|%>
+						<td><center><strong><%= r.empname %></strong></center></td>
+	  				<%end%>
+		  		<td>
+		  			<%if cons.ppmd_head_approve != nil%>
+		  				<center>
+							<strong><%= cons.ppmd_head_approve.to_date.to_formatted_s(:long) %></strong>
+	  					</center>
+		  			<%end%>
+		  		</td>
+		  		<td><center><strong><%= truncate(cons.purpose, length: 20) %></strong></center></td>
+		  		<td><center><strong><%= cons.status %></strong></center></td>
+				<td>
+		  			<%= link_to "View", consolidate_path(cons),
+	           	            data: {confirm: "Are you sure you want to view this request?"}, 
+	                        class: "btn btn-xs btn-info" %>
+	                <%if current_user.designation.name == "Department Head" && 
+		  				current_user.department.name == "IT Department" && cons.status == "Pending" %>
+		  				<%= link_to "Inspect", edit_consolidate_path(cons),
+	           	            data: {confirm: "Are you sure you want to add spec to this request?"}, 
+	                        	class: "btn btn-xs btn-primary" %>
+		  			<%end%>
+		  		</td>
+		  		
+  			</tr>
+  		<%end%>
+  	</tbody>
+  </table>
+ </div>

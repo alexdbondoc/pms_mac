@@ -1,0 +1,226 @@
+<h1 align="center">Inspect Consolidate Request</h1>
+<%= form_for(@consolidate) do |f| %>
+<%= render 'share/errors', obj: @consolidate %>
+	<div class="panel panel-default">
+  	<!-- Default panel contents -->
+  		<div class="panel-heading center"><strong>Requisition of Equipments Form</strong></div>
+  		<!-- Table -->
+  		<table class="table">
+	  		<thead>
+	  			<tr>
+			  		<div class="row">
+			  			<div class="form-group">	
+							<td></td>
+							<td></td>
+							<td></td>
+							<td> 
+								<center>
+									<strong>Request Type: &nbsp <%= @category %></strong>
+									<%= f.hidden_field(:category_id, value: @category_id) %>
+								</center> 
+							</td>
+							<td> </td>
+							<td> </td>
+							<td></td>
+						</div>
+					</div>
+				</tr>
+
+				<tr>
+					<th><center>Requestor Info</center></th>
+					<th></th>
+					<th><center>IT Specs Inspector</center></th>
+					<th></th>
+					<th><center>Approver Info</center></th>
+					<th></th>
+					<th><center>Reciever Info</center></th>
+				</tr>
+
+				<tr>
+					<div class="row">
+		  				<div class="form-group">
+							<td> 
+								<center>
+									<%= f.label current_user.empname %>
+									<%= f.hidden_field(:user_id, value: current_user.id) %>
+								</center> 
+							</td>
+							<td></td>
+							<td>
+								<center>
+									<%@itd.each do |itd|%>
+										<strong><%= itd.empname %></strong>
+										<%= f.hidden_field(:inspected_by, value: itd.id) %>
+									<%end%>
+								</center>
+							</td>
+							<td></td>
+		  					<td><center><strong><%= @consolidate.officer.user.empname %></strong></center></td>
+							<td></td>
+							<td>
+								<center>
+									<%@ppmd.each do |ppmd|%>
+										<strong><%= ppmd.empname %></strong>
+										<%= f.hidden_field(:received_by, value: ppmd.id) %>
+									<%end%>
+								</center>
+							</td>
+						</div>
+					</div>
+				</tr>
+
+				<tr>
+					<div class="row">
+		  				<div class="form-group">
+		  					<td> <center><%= f.label current_user.designation.name %> </center> </td>
+							<td></td>
+							<td>
+								<center> 
+		  							<% @itd.each do |itd| %>
+		  								<strong><%= itd.designation.name %></strong> 
+		  							<%end%>
+		  						</center>
+							</td>
+							<td></td>
+		  					<td><center><strong><%= @consolidate.user.designation.name %></strong></center></td>
+							<td></td>
+							<td>
+								<center>
+									<% @ppmd.each do |ppmd| %>
+										<strong><%= ppmd.designation.name %></strong> 
+									<%end%>
+								</center>
+							</td>
+		  				</div>
+		  			</div>
+				</tr>
+
+				<tr>
+					<div class="row">
+		  				<div class="form-group">
+		  					<td> <center><%= f.label current_user.department.name %>
+								<%= f.hidden_field(:department_id, value: current_user.department_id) %>
+								<%= f.hidden_field(:inspected_date, value: @time.to_formatted_s(:db)) %>
+								<%= f.hidden_field(:status, value: "Inspected") %>
+		  					</center></td>
+							<td></td>
+							<td>
+								<center> 
+		  							<% @itd.each do |itd| %>
+		  								<strong><%= itd.department.name %></strong> 
+		  							<%end%>
+		  						</center>
+							</td>
+							<td></td>
+		  					<td><center><strong><%= @consolidate.user.department.name %></strong></center></td>
+							<td></td>
+							<td>
+								<center>
+									<% @ppmd.each do |ppmd| %>
+										<strong><%= ppmd.department.name %></strong>
+									<%end%>
+								</center>
+							</td>
+		  				</div>
+		  			</div>
+				</tr>
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td><center><strong>Request Contents</strong></center></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th><center><strong>Product Type</strong></center></th>
+					<th><center><strong>Product</strong></center></th>
+					<th><center><strong>Quantity</strong></center></th>
+					<th><center><strong>Unit</strong></center></th>
+					<th><center><strong>Requestor Name</strong></center></th>
+					<th colspan="2"><center><strong>Specification</strong></center></th>
+				</tr>
+	  		</thead>
+	  		<tbody class="dynamic" id="pda-details">
+	  			<%i = 0%>
+		  		<%= f.fields_for :consolidate_lines, @consolidate.consolidate_lines do |cl| %>
+					<tr>
+						<div class="row">
+			  				<div class="form-group">
+				  				<%= cl.hidden_field(:request_id, value: @consolidate.consolidate_lines) %>
+								<td> 
+									<center>
+										<strong><%= @consolidate.consolidate_lines[i].type.name %></strong>
+										<%= cl.hidden_field(:type_id) %>
+									</center> 
+								</td>
+								<td> 
+									<center>
+										<strong>
+											<%= @consolidate.consolidate_lines[i].product.name %>
+											<%= cl.hidden_field(:product_id) %>
+										</strong>
+									</center> 
+								</td>
+				  				<td> 
+									<center>
+										<strong>
+											<%= @consolidate.consolidate_lines[i].qty %> 
+											<%= cl.hidden_field(:qty) %>	
+										</strong>
+									</center> 
+								</td>
+								<td> 
+									<center>
+										<strong>
+											<%= @consolidate.consolidate_lines[i].unit.name %>
+											<%= cl.hidden_field(:unit_id) %>
+										</strong>
+									</center> 
+								</td>
+								<td>
+									<center>
+										<strong>
+											<%= @consolidate.consolidate_lines[i].request.user.empname %>
+										</strong>
+									</center>
+								</td>
+								<td colspan="3">
+									<center>
+										<div class="">
+											<%= cl.text_area :specification, rows: 3, class: "form-control", placeholder: "Specification of requested item", autofocus: true %>
+								    	</div>
+									</center>
+								</td>
+			  				</div>
+				  		</div>
+				  		<%i +=1%>
+					</tr>
+				<%end%>
+			</tbody>
+			<tfoot>
+				<tr>
+					<div class="form-group">
+					    <td> <center><%= f.label "Purpose:" %></center> </td>
+					    <td colspan=8>
+					    	<div class="col-sm-11">
+								<%= f.text_area :purpose, rows: 3, class: "form-control", placeholder: "Purpose of requesition of item", readonly: true %>
+					    	</div>
+					    </td>
+				    </div>
+				</tr>
+
+				<tr>
+					<td colspan=8>
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-8">
+								<center><%= f.submit(@consolidate.new_record? ? "Consolidate Request" : "Save Inspected Request", class: "btn btn-primary btn-lg")%></center>
+							</div>
+						</div>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+<%end%>
