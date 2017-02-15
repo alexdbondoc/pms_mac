@@ -1,0 +1,100 @@
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading center"><strong>List of Purchase Orders</strong></div>
+
+  <!-- Table -->
+  <table class="table">
+    <thead>
+      <tr>
+        <td><%= will_paginate %></td></tr>
+      <th></th>
+      <th><center>PO<br>Number</center></th>
+      <th><center>Created<br>By</center></th>
+      <th><center>Date<br>Created</center></th>
+      <th><center>Supplier<br>Name</center></th>
+      <th><center>Delivery<br>Date</center></th>
+      <th><center>Terms of<br>Payment</center></th>
+      <th><center>Total Price</center></th>
+      <th><center>Status</center></th>
+      <th>
+        <% @orders.each do |ord| %>
+          <% @order_list = ord %>
+        <%end%>
+        <%if @order_list != nil%>
+        <%= form_for(@order_list) do |f| %>
+          <%= hidden_field_tag :ords_ids %>
+          <%= f.hidden_field(:PONumber, value: @order_list.PONumber) %>
+          <%= f.hidden_field(:terms, value: @order_list.terms) %>
+          <%= f.hidden_field(:delivery_date, value: @order_list.delivery_date) %>
+          <%= f.hidden_field(:supplier_id, value: @order_list.supplier_id) %>
+          <%= f.hidden_field(:total_amount, value: @order_list.total_amount) %>
+          <%= f.hidden_field(:user_id, value: @order_list.user_id) %>
+          <%= f.fields_for :order_lines, @order_list.order_lines do |rl| %>
+            <%= rl.hidden_field(:type_id, value: @order_list.order_lines) %>
+            <%= rl.hidden_field(:product_id, value: @order_list.order_lines) %>
+            <%= rl.hidden_field(:qty, value: @order_list.order_lines) %>
+            <%= rl.hidden_field(:unit_id, value: @order_list.order_lines) %>
+            <%= rl.hidden_field(:consolidate_id, value: @order_list.order_lines) %>
+            <%= rl.hidden_field(:description, value: @order_list.order_lines) %>
+            <%= rl.hidden_field(:unit_price, value: @order_list.order_lines) %>
+            <%= rl.hidden_field(:amount, value: @order_list.order_lines) %>
+          <%end%>
+          <%if logged_in? && (current_user.designation.name == "Department Head" && 
+                    current_user.department.name == "Property and Procurement")%>
+            <%= f.submit "Receive", method: :put, 
+              data: { confirm: "Are you sure you want to receive checked request?" }, 
+                class: "btn btn-xs btn-success"%> 
+            <%= f.submit "Reject", method: :put, 
+              data: { confirm: "Are you sure you want to reject checked request?" }, 
+                class: "btn btn-xs btn-danger"%>
+          <%elsif logged_in? && (current_user.designation.name == "Department Head" && 
+                    current_user.department.name == "Information and Communication Technology")%>
+            <%= f.submit "Inspect", method: :put, 
+              data: { confirm: "Are you sure you want to Inspect checked request?" }, 
+                class: "btn btn-xs btn-success"%> 
+            <%= f.submit "Reject", method: :put, 
+              data: { confirm: "Are you sure you want to reject checked request?" }, 
+                class: "btn btn-xs btn-danger"%>
+          <%else%>
+            <th></th>
+            <th></th>
+          <%end%>
+        <%end%>
+        <%end%>
+      </th>
+    </thead>
+    <tbody>
+      <% @orders.each do |ords| %>
+        <tr>
+          <td>
+            <%if current_user.designation.name == "Department Head" && current_user.department.name == "Property and Procurement"%>
+              <%= check_box_tag "ords_id[#{ords.id}]", ords.id, nil, 
+                {:checked => false, :multiple => true, class: :ords_id} %>
+            <%end%>
+          </td>
+          <td><center><strong><%= ords.PONumber %></strong></center></td>
+          <td><center><strong><%= ords.user.empname %></strong></center></td>
+          <td><center><strong><%= ords.created_at.to_date.to_formatted_s(:rfc822) %></strong></center></td>
+          <td><center><strong><%= truncate(ords.supplier.name, length: 20)%> </strong></center></td>
+          <td><center><strong><%= ords.delivery_date.to_date.to_formatted_s(:rfc822) %></strong></center></td>
+          <td><center><strong><%= truncate(ords.terms, length: 20) %></strong></center></td>
+          <td>
+            <center>
+              <strong><%= number_to_currency(ords.total_amount, delimiter: ',', unit: '₱ ') %></strong>
+            </center>
+          </td>
+          <td><center><strong><%= ords.status %></strong></center></td>
+          <td>
+            <%= link_to "View", order_path(ords),
+                data: {confirm: "Are you sure you want to view this Purchase Order?"}, 
+                  class: "btn btn-xs btn-info" %>
+            <%if ords.status == "Pending" && current_user.designation.name == "Property and Procurement"%>
+              <%= link_to "Update", edit_order_path(ords), class: "btn btn-xs btn-primary", 
+                  data: { confirm: "Are you sure you want to update this Purchase Order??" }%>
+            <%end%>
+          </td>
+        </tr>
+      <%end%>
+    </tbody>
+  </table>
+ </div>

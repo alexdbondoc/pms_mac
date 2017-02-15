@@ -1,5 +1,5 @@
 <h2 align="center">Request Type: <%= @consolidate.category.name %></h2>
-<div class="well col-xs-8 col-xs-offset-2">
+<div class="well col-xs-12 col-xs-offset-0">
 	<ul class="listing">
 		<div class="row center">
 			<div class="col-md-4 col-md-offset-4">
@@ -7,6 +7,21 @@
 				<li class="article-title"> <%= link_to @consolidate.user.empname, user_path(@consolidate.user) %> </li>
 				<li> <b><%= @consolidate.department.name %> Department </b></li>
 				<li><small><%= pluralize(@consolidate.user.consolidates.count, "Request") if @consolidate.user.requests %></small></li>
+				<%if @consolidate.category.name == "IT Equipment"%>
+					<%@it = User.where("id" => @consolidate.inspected_by)%>
+						<%@it.each do |it|%>
+							<li><strong>IT Officer: <%= it.empname %></strong></li>
+						<%end%>
+					<%if @consolidate.inspected_date != nil%>
+						<li>
+							<strong>
+								Status: Inspected at <%= @consolidate.inspected_date.to_date.to_formatted_s(:long)%>
+							</strong>
+						</li>
+					<%else%>
+						<li><strong>Status: Pending<strong></li>
+					<%end%>
+				<%end%>
 				<li><strong>Approving Officer: <%= @consolidate.officer.user.empname %></strong></li>
 				<%if @consolidate.group_head_approve != nil%>
 					<li>
@@ -15,7 +30,7 @@
 						</strong>
 					</li>
 				<%else%>
-					<li><center><strong>Pending</strong></center></li>
+					<li><center><strong>Status: Pending</strong></center></li>
 				<%end%>
 				<% @receiver = User.where("id" => @consolidate.received_by) %>
 		  			<%@receiver.each do |r|%>
@@ -28,7 +43,7 @@
 						</strong>
 					</li>
 				<%else%>
-					<li><center><strong>Pending</strong></center></li>
+					<li><center><strong>Status: Pending</strong></center></li>
 				<%end%>
 			</div>
 		</div>
@@ -37,20 +52,24 @@
 		<div class="panel-heading center"><strong>Consolidated Requested Equipments</strong></div>
 		<table align="center" border=2>
 			<thead>
+				<th class="col-md-1 col-md-offset-4 center">Request Number</th>
 				<th class="col-md-1 col-md-offset-4 center">Product Type</th>
 				<th class="col-md-1 col-md-offset-4 center">Request Product</th>
 				<th class="col-md-2 col-md-offset-4 center">Quantity</th>
-				<th class="col-md-5 col-md-offset-4 center">Requestor</th>
+				<th class="col-md-2 col-md-offset-4 center">Requestor</th>
 				<th class="col-md-5 col-md-offset-4 center">Specification </th>
 			</thead>
 			<tbody>
 				<% @cons_line = ConsolidateLine.where("consolidate_id" => @consolidate.id) %>
 				<% @cons_line.each do |line| %>
 					<tr>
+						<td class="col-md-1 col-md-offset-4 center"><%= line.request.RISNum %></td>
 						<td class="col-md-2 col-md-offset-4 center"><%= line.type.name %></td>
 						<td class="col-md-2 col-md-offset-4 center"><%= line.product.name %></td>
-						<td class="col-md-2 col-md-offset-4 center"><%= pluralize(line.qty, "#{line.unit.name}") %></td>
-						<td class="col-md-3 col-md-offset-4 center"><%= line.request.user.empname %></td>
+						<td class="col-md-2 col-md-offset-4 center">
+							<%= pluralize(line.qty, "#{line.unit.name}") %>
+						</td>
+						<td class="col-md-2 col-md-offset-4 center"><%= line.request.user.empname %></td>
 						<td class="col-md-5 col-md-offset-4 center"><%= line.specification %></td>
 					</tr>
 				<%end%>
@@ -76,13 +95,13 @@
 	                            data: {confirm: "Are you sure you want to reject this request?"}, 
 	               		        class: "btn btn-xs btn-danger" %>
 	            <%elsif @consolidate.status == "Receive" %>
-	            	<%= link_to "Make PR", consolidate_path(@consolidate, :pr => true), method: :put, 
+	            	<%= link_to "Make PO", consolidate_path(@consolidate, :po => true), method: :put, 
 	                            data: {confirm: "Are you sure you want to Make PR for this request?"}, 
 	               		        class: "btn btn-xs btn-success" %>
 	            <%end%>
 	        <%elsif current_user.designation.name == "Department Head" && 
 		    		current_user.department.name == "IT Department" && @consolidate.status == "Pending"%>
-		    	<%= link_to "Inspect", edit_consolidate_path(@consolidate, :inspect => true),
+		    	<%= link_to "Add Specification", edit_consolidate_path(@consolidate, :inspect => true),
 	           	            data: {confirm: "Are you sure you want to inspect this request?"}, 
 	                        	class: "btn btn-xs btn-primary" %>
 			<% end %>

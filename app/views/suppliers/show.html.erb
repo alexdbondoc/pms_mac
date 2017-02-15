@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+<h1 align="center">Welcome to <%= @supplier.name %>'s page</h1>
+<div align="center">
+	<div class="row">
+		<span class="badge">
+			<%= link_to "Update Supplier Info", edit_supplier_path(@supplier),
+                      data: {confirm: "Are you sure you want to update Supplier's Info?"}, 
+                                  class: "btn btn-xs btn-primary" %> 
+			<%= link_to 'Back', suppliers_path,
+                      data: {confirm: "Are you sure you want to List of Supplier?"}, 
+                                  class: "btn btn-xs btn-primary" %>
+		</span>
+	</div>
+</div>

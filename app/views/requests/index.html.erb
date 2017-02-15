@@ -9,10 +9,11 @@
         <td colspan="12" align="center"><%= will_paginate %></td>
       </tr>
       <th></th>
+      <th><center>Request <br> Number</center></th>
       <th><center>Request <br> Type</center></th>
       <th><center>Requested <br> By</center></th>
-      <th><center>Department</center></th>
       <th><center>Date <br> Requested</center></th>
+      <th><center>Department</center></th>
       <th><center>Approving <br> Officer</center></th>
       <th><center>Purpose</center></th>
       <th><center>Status</center></th>
@@ -38,13 +39,13 @@
                 <%= rl.hidden_field(:unit_id, value: @request_list.request_lines) %>
               <%end%>
               <%= f.submit :Approve, method: :put, 
-                  data: { confirm: "Are you sure you want to approve checked request?" }, 
+                  data: { confirm: "Are you sure you want to approve all checked request?" }, 
                             class: "btn btn-xs btn-primary"  %>
               <%= f.submit :Consolidate, method: :put, 
-                      data: {confirm: "Are you sure you want to consolidate all Pending requests?"}, 
+                      data: {confirm: "Are you sure you want to consolidate all checked requests?"}, 
                                   class: "btn btn-xs btn-success" %>
               <%= f.submit :Disapprove, method: :put,
-                      data: {confirm: "Are you sure you want to disapprove all Pending requests?"}, 
+                      data: {confirm: "Are you sure you want to disapprove all checked requests?"}, 
                                   class: "btn btn-xs btn-danger" %>
             <%end%>
           <%end%>
@@ -56,6 +57,8 @@
         <% @requests.each do |req| %>
           <% if logged_in? && current_user.id == req.user_id %>
             <tr>
+              <td></td>
+              <td align="center"><%= req.RISNum %></td>
               <td align="center"><%= req.category.name %></td>
               <td align="center"><%= req.user.empname %></td>
               <td align="center"><%= req.date_created.to_formatted_s(:long) %></td>
@@ -67,17 +70,15 @@
                 <%= link_to "View", request_path(req),
                       data: {confirm: "Are you sure you want to view this request?"}, 
                         class: "btn btn-xs btn-success" %>
-              </td>
               <% if req.status == "Pending" %>
-                <td>
                   <%= link_to "Update", edit_request_path(req), 
                                     data: {confirm: "Are you sure you want to update this request?"}, 
                                       class: "btn btn-xs btn-primary" %>
                   <%= link_to "Delete", request_path(req), method: :delete, 
                                     data: {confirm: "Are you sure you want to delete this request?"}, 
                                       class: "btn btn-xs btn-danger" %>
-                </td>
               <% end %>
+              </td>
             </tr>
           <% elsif logged_in? && current_user.id == req.officer.user_id %>
             <tr>
@@ -85,6 +86,7 @@
                 <%= check_box_tag "request_id[#{req.id}]", req.id, nil, 
                       {:checked => false, :multiple => true, class: :request_id} %>
               </td>
+              <td align="center"><%= req.RISNum %></td>
               <td align="center"><%= req.category.name %></td>
               <td align="center"><%= req.user.empname %></td>
               <td align="center"><%= req.date_created.to_date.to_formatted_s(:long) %></td>

@@ -3,7 +3,12 @@ class RequestsController < ApplicationController
   before_action :require_user
 	#before_action :require_admin, except: [:index, :show]
 	def index
-	    @requests = Request.order("date_created DESC").paginate(page: params[:page], per_page: 5)
+      sleep 1
+      if current_user.department.name == "Department Head"
+	      @requests = Request.where(:department_id => current_user.department_id).order("date_created DESC").paginate(page: params[:page], per_page: 5)
+      else
+        @requests = Request.where(:user_id => current_user.id).order("date_created DESC").paginate(page: params[:page], per_page: 5)
+      end
 	end
   
 	def new
@@ -12,17 +17,23 @@ class RequestsController < ApplicationController
   
   def create
     @request = Request.new(request_params)
-      
+    arr = params[:request][:request_lines_attributes]
     if request_params[:request_lines_attributes] == nil
       @var = false
     else
       @var = true
     end
 
-    # raise request_params.inspect
-
     if @var == true
       if @request.save
+        @addRISNum = Request.find(@request.id)
+        params = ActionController::Parameters.new({
+          request: {
+            RISNum: "RIS00000#{@request.id}"
+          }
+        })
+        asd = params.require(:request).permit(:RISNum)
+        @addRISNum.update(asd)
         flash[:success] = "Request was created successfully."
         redirect_to requests_path
       else
@@ -31,11 +42,11 @@ class RequestsController < ApplicationController
     else
       if @request.save
         for x in 0..4
-          if params[:request][:request_lines_attributes]["#{x}"] != ""
-            @type_id = params[:request][:request_lines_attributes]["#{x}"][:type_id]
-            @product_id = params[:request][:request_lines_attributes]["#{x}"][:product_id]
-            @qty = params[:request][:request_lines_attributes]["#{x}"][:qty]
-            @unit_id = params[:request][:request_lines_attributes]["#{x}"][:unit_id]
+          if arr["#{x}"] != ""
+            @type_id = arr["#{x}"][:type_id]
+            @product_id = arr["#{x}"][:product_id]
+            @qty = arr["#{x}"][:qty]
+            @unit_id = arr["#{x}"][:unit_id]
             params = ActionController::Parameters.new({
               request_line: {
                 request_id: @request.id,
@@ -50,6 +61,14 @@ class RequestsController < ApplicationController
             @request_line.save
           end
         end
+        @addRISNum = Request.find(@request.id)
+        params = ActionController::Parameters.new({
+          request: {
+            RISNum: "RIS00000#{@request.id}"
+          }
+        })
+        asd = params.require(:request).permit(:RISNum)
+        @addRISNum.update(asd)
         flash[:success] = "Request was created successfully."
         redirect_to requests_path
       else
@@ -80,17 +99,17 @@ class RequestsController < ApplicationController
 
         while @x < arr.length
           @request = Request.find(arr[@x])
-          @categ[@x] = @request.category_id
+          @categ[@x] = @request.category.name
           @status[@x] = @request.status
           @x +=1
         end
-
+        # raise params.inspect
         i = 0;
         if @status.include?("Approved") || @status.include?("Dispproved") || @status.include?("Consolidated")
           flash[:danger] = "Unable to approve request/s. Please select Pending Request/s"
           redirect_to requests_path
         elsif @categ.uniq.length == 0
-          flash[:danger] = "Please select request/s to be approved"
+          flash[:danger] = "Please select Pending request/s to approve"
           redirect_to requests_path
         else
           while i < @x
@@ -126,7 +145,7 @@ class RequestsController < ApplicationController
           flash[:danger] = "Unable to Disapprove request/s. Please select Pending Request/s"
           redirect_to requests_path
         elsif @categ.uniq.length == 0
-          flash[:danger] = "Please select request/s to be disapproved"
+          flash[:danger] = "Please select Pending request/s to disapprove"
           redirect_to requests_path
         else
           while i < @x
@@ -160,11 +179,14 @@ class RequestsController < ApplicationController
 
         # raise request_params.inspect
         i = 0;
-        if @status.include?("Dispproved") || @status.include?("Pending") || @categ.uniq.length > 1 
+        if @status.include?("Dispproved") || @status.include?("Pending") || @status.include?("Consolidated")
           flash[:danger] = "Unable to Consolidate request/s. Please select Approved Request/s"
           redirect_to requests_path
+        elsif @categ.uniq.length > 1
+          flash[:danger] = "Unable to Consolidate request/s. Please select 1 Request Type."
+          redirect_to requests_path
         elsif @categ.uniq.length == 0
-          flash[:danger] = "Please select request/s to be Consolidated"
+          flash[:danger] = "Please select Approved request/s to Consolidate"
           redirect_to requests_path
         else
           # raise request_params.inspect
@@ -188,7 +210,8 @@ class RequestsController < ApplicationController
               }
             })
             permitted = params.require(:request_line).permit(:request_id, :type_id, :product_id, :qty, :unit_id)
-            @request_lines = @request.request_lines.update(permitted)
+            @request_lines = RequestLine.find(@request.request_lines.ids[@x])
+            @request_lines.update(permitted)
             @x +=1
           end
         end
@@ -215,7 +238,7 @@ class RequestsController < ApplicationController
 
 	private
   	def request_params
-    	params.require(:request).permit(:category_id, :user_id, :officer_id, :date_created, :reason, :status, :department_id,
+    	params.require(:request).permit(:category_id, :user_id, :officer_id, :date_created, :reason, :status, :department_id,  
        request_lines_attributes: [:request_id, :product_id, :type_id, :unit_id, :qty].reject{ |k,v| v.blank? })
   	end
     

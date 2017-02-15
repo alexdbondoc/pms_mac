@@ -118,8 +118,8 @@
 							</td>
 			  				<td> <center><%= rl.label "Quantity:" %></center> </td>
 			  				<td> 
-								<div class="col-sm-8">
-									<%= rl.text_field :qty, placeholder: "Enter Qty", autofocus: true, value: ""%>
+								<div class="form-group">
+									<%= rl.number_field :qty, autofocus: true, in: 1..10%>
 								</div> 
 							</td>
 			  				<td> <center><%= rl.label "Unit:"%></center> </td>

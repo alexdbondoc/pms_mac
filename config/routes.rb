@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-
 	root 'welcome#index'
 
 	get 'login', to: 'sessions#new'
@@ -13,9 +12,11 @@ Rails.application.routes.draw do
 	resources :designations
 	resources :groups
 	resources :officers
+	resources :orders
 	resources :products
 	resources :requests
 	resources :request_lines
+	resources :suppliers
 	resources :types
 	resources :units
 	resources :users

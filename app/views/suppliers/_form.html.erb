@@ -1,0 +1,93 @@
+<%= render 'share/errors', obj: @supplier %>
+<div class="row">
+  <div class="col-md-12">
+    <%= form_for(@supplier, :html => {class: "form-horizontal", role: "form"}) do |f| %>
+      <div class="form-group">
+        <div class="control-label col-sm-2">
+          <%= f.label :name %>
+        </div>
+
+        <div class="col-sm-8">
+          <%= f.text_field :name, class: "form-control", placeholder: "Enter Supplier's Name", autofocus: true %>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="control-label col-sm-2">
+          <%= f.label :address %>
+        </div>
+
+        <div class="col-sm-8">
+          <%= f.text_field :address, class: "form-control", placeholder: "Enter Supplier's Address", autofocus: true %>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="control-label col-sm-2">
+          <%= f.label :web %> <%= f.label :site %>
+        </div>
+
+        <div class="col-sm-8">
+          <%= f.text_field :web, class: "form-control", placeholder: "Enter Supplier's Web Site" %>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="control-label col-sm-2">
+          <strong>Email Address</strong>
+        </div>
+
+        <div class="col-sm-8">
+          <%= f.email_field :email, class: "form-control", placeholder: "Enter Supplier's Email Address" %>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="control-label col-sm-2">
+          <strong>Telephone Number</strong>
+        </div>
+
+        <div class="col-sm-8">
+          <%= f.text_field :tel, class: "form-control", placeholder: "Enter Employee's Telephone Number", autofocus: true %>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="control-label col-sm-2">
+          <strong>TIN Number</strong>
+        </div>
+
+        <div class="col-sm-8">
+          <%= f.text_field :tin, class: "form-control", placeholder: "Enter Supplier's Tin Number", autofocus: true %>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="control-label col-sm-2">
+          <strong>Fax Number</strong>
+        </div>
+
+        <div class="col-sm-8">
+          <%= f.text_field :fax, class: "form-control", placeholder: "Enter Supplier's Fax Number", autofocus: true %>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="control-label col-sm-2">
+          <strong>Representative</strong>
+        </div>
+
+        <div class="col-sm-8">
+          <%= f.text_field :representative, class: "form-control", placeholder: "Enter Supplier's Representative", autofocus: true %>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <%= f.submit class: "btn btn-primary btn-lg" %>
+        </div>
+      </div>
+    <% end %>
+    
+  </div>
+</div>

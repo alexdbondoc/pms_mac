@@ -1,0 +1,148 @@
+<h1><center>New Purchase Order</center></h1>
+<%= form_for(@order) do |f| %>
+  <%= render 'share/errors', obj: @order %>
+  <div class="panel panel-default">
+    <!-- Default panel contents -->
+      <div class="panel-heading center"><strong>Purchase Order of Equipments Form</strong></div>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <td colspan="4">
+              <center>
+                <strong>Supplier:</strong>
+                <%= f.collection_select(:supplier_id, Supplier.all, :id, :name, {include_blank: 'Please Select'})%>
+              </center>
+            </td>
+            <td colspan="2"><center><strong>Purchase Oder Number:</strong></center></td>
+            <td colspan="2">
+                <center><strong><%=@ponum%></strong></center>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="4"> 
+              <%= f.hidden_field :PONumber, class: "form-control", autofocus: true, value: @ponum %>
+              <%= f.hidden_field :cons_ids, value: @cons_ids %>
+              <%= f.hidden_field(:user_id, value: current_user.id) %>
+              <%= f.hidden_field(:status, value: "Pending") %>
+            </td>
+            <td colspan="2"><center><strong>Purchase Order Date:</strong></center></td>
+            <td colspan="2"><center><strong><%= @time.to_date.to_formatted_s(:long) %></strong></center></td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              
+            </td>
+            <td colspan="2"><span id='supplier_contact'></span></td>
+            <td colspan="2"><center><strong>Terms of Payment: </strong></center></td>
+            <td colspan="2">
+              <center><strong>Payable immediately, due net</strong></center>
+              <%= f.hidden_field :terms, class: "form-control", autofocus: true, value: "Payable immediately, due net" %>
+            </td>
+          </tr>
+          <tr>
+            <th colspan="4"><center><strong>Place of Delivery:</strong></center></th>
+            <th colspan="4"><center><strong>Date of Delivery:</strong></center></th>
+          </tr>
+          <tr>
+            <td colspan="4">
+              <center>
+                <strong>
+                  2/F Bonifacio Tchnology Center, 31st Street Bonifacio Global City, Taguig City <br>
+                  Tel No.: 572-1700 &nbsp Loc.: 1782/1784 &nbsp Fax No.: 816-1030
+                </strong>
+              </center>
+            </td>
+            <td colspan="4">
+              <center>
+                <div class="form-group">
+                  <%= f.date_field :delivery_date, as: :date, input_html: { class: "datepicker", value: Time.now.strftime('%Y-%m-%d') }, min: Date.today, include_blank: true%>
+                </div>
+              </center>
+            </td>
+          </tr>
+          <tr>
+            <th><center>Equipment Type</center></th>
+            <th colspan="3"><center>Equipment Description</center></th>
+            <th><center>Quantity</center></th>
+            <th><center>Unit Price</center></th>
+            <th><center>Amount</center></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @consolidate_lines.each do |cl| %>
+          <%= f.fields_for :order_lines, @order.order_lines.build do |ol| %>
+                <tr>
+                  <div class="row">
+                    <div class="form-group">
+                        <%= ol.hidden_field(:consolidate_id, value: cl.consolidate_id) %>
+                      <td> 
+                        <center>
+                          <strong><%= cl.type.name %></strong>
+                          <%= ol.hidden_field(:type_id, value: cl.type_id) %>
+                        </center> 
+                      </td>
+                      <td colspan="3"> 
+                        <center>
+                          <strong>
+                            <%= cl.product.name %>/<%= cl.specification%>
+                            <%= ol.hidden_field(:product_id, value: cl.product_id) %>
+                            <%= ol.hidden_field(:description, value: cl.specification) %>
+                          </strong>
+                        </center> 
+                      </td>
+                        <td> 
+                        <center>
+                          <strong>
+                            <%= pluralize(cl.qty, "#{cl.unit.name}")%> 
+                            <%= ol.hidden_field(:qty, value: cl.qty)%>
+                            <%= ol.hidden_field(:unit_id, value: cl.unit_id) %>
+                          </strong>
+                        </center> 
+                      </td>
+                      <td> 
+                        <center>
+                          <%= ol.number_field :unit_price, min: 100, class: :unit_price, 
+                            value: number_to_currency(ol.object.unit_price.to_f, delimiter: '', unit: '') %>
+                        </center> 
+                      </td>
+                      <td> 
+                        <center>
+                          <%= ol.number_field :amount, readonly: true, 
+                            value: number_to_currency(ol.object.amount.to_f, delimiter: '', unit: '')%>
+                        </center> 
+                      </td>
+                    </div>
+                  </div>
+                </tr>
+            <%end%>
+          <%end%>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><center><strong>Total Amount: </strong></center></td>
+            <td>
+              <center>
+                <%= f.number_field :total_amount, readonly: true, class: :total_amount, 
+                      value: number_to_currency(f.object.total_amount.to_f, delimiter: '', unit: '')%>
+              </center>
+            </td>
+          </tr>
+          <tr>
+          <td colspan=8>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-8">
+                <center><%= f.submit(@order.new_record? ? "Generate Purchase Order" : "Update Purchase Order", class: "btn btn-primary btn-lg")%></center>
+              </div>
+            </div>
+          </td>
+        </tr>
+        </tfoot>
+      </table>
+  </div>
+<% end %>

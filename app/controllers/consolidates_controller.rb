@@ -2,12 +2,15 @@ class ConsolidatesController < ApplicationController
 	before_action :require_heads
 	before_action :require_user
 	def index
+		sleep 1
 		if current_user.designation.name == "Group Head"
 			@consolidates = Consolidate.joins(user: [{department: :group}]).where("groups.id" => current_user.department.group.id).order("created_at DESC").paginate(page: params[:page], per_page: 5)
-		elsif current_user.designation.name == "Department Head" && current_user.department.name == "IT Department"
+		elsif current_user.designation.name == "Department Head" && current_user.department.name == "Information and Communication Technology"
 			@consolidates = Consolidate.joins(:category).where("categories.name" => "IT Equipment").order("created_at DESC").paginate(page: params[:page], per_page: 5)
 		elsif current_user.designation.name == "Department Head" && current_user.department.name == "Property and Procurement"
 			@consolidates = Consolidate.order("created_at DESC").paginate(page: params[:page], per_page: 5)
+		elsif current_user.designation.name == "System Admin"
+			@consolidates = Consolidate.all.order("created_at DESC").paginate(page: params[:page], per_page: 5)
 		else
 			@consolidates = Consolidate.where(:user_id => current_user.id).order("created_at DESC").paginate(page: params[:page], per_page: 5)
 		end
@@ -65,6 +68,14 @@ class ConsolidatesController < ApplicationController
 	            permitted = params.require(:request).permit(:status)
 	            req.update(permitted)
 			end
+			params = ActionController::Parameters.new({
+	            consolidate: {
+	                ConsNum: "RIS00000#{@consolidate.id}"
+	            }
+	        })
+	        asd = params.require(:consolidate).permit(:ConsNum)
+	        @consolidate.update(asd)
+		
 			flash[:success] = "Requests has successfully Consolidated"
 			redirect_to consolidates_path
 		else
@@ -87,7 +98,7 @@ class ConsolidatesController < ApplicationController
 		@disapp = params[:disapprove]
 		@receive = params[:receive]
 		@reject = params[:reject]
-		@pr = params[:pr]
+		@po = params[:po]
 		@id = params[:id]
 		# raise params.inspect
 		if @action == "Approve" || @app != nil
@@ -107,7 +118,6 @@ class ConsolidatesController < ApplicationController
 		        	render 'index'
 		        end
 			else
-				# raise params.inspect
 				@x = 0
 				arr = cons_ids.tr('', '').split(',').map(&:to_i)
 				@status = Array.new(arr.length)
@@ -115,35 +125,87 @@ class ConsolidatesController < ApplicationController
 	 
 		        while @x < arr.length
 		          @request = Consolidate.find(arr[@x])
-		          @categ[@x] = @request.category_id
+		          @categ[@x] = @request.category.name
 		          @status[@x] = @request.status
 		          @x +=1
 		        end
 
-		        i = 0;
-		        if @status.include?("Approved") || @status.include?("Dispproved") || @status.include?("Received") || @status.include?("Rejected") || @status.include?("Purchase Requested") || @status.include?("Pending")
-		          flash[:danger] = "Unable to approve request/s. Please select Pending Consolidated Request/s"
-		          redirect_to consolidates_path
-		        elsif @categ.uniq.length == 0
-		          flash[:danger] = "Please select consolidated request/s to approve"
-		          redirect_to consolidates_path
-		        else
-		        	while i < @x
-			            @request = Consolidate.find(arr[i])
-			            params = ActionController::Parameters.new({
-			                consolidate: {
-			        			group_head_approve: time.to_formatted_s(:db), 
-			                  	status: "Approved"
-			                }
-			              })
-			            permitted = params.require(:consolidate).permit(:group_head_approve, :status)
-			            # raise params.inspect
-			            @request.update(permitted)
-			            i +=1
-			        end
-				flash[:success] = "Requests has successfully Approved"
-				redirect_to consolidates_path
-			    end
+				# raise params.inspect
+		        if @categ.uniq.length > 1
+		        	if @status.include?("Approved") || @status.include?("Dispproved") || @status.include?("Received") || 
+		        			@status.include?("Rejected") || @status.include?("Purchase Ordered")
+			          flash[:danger] = "Unable to approve request/s. Please select Consolidated Request/s"
+			          redirect_to consolidates_path
+			        else
+		        		i = 0;
+			        	while i < @x
+				            @request = Consolidate.find(arr[i])
+				            params = ActionController::Parameters.new({
+				                consolidate: {
+				        			group_head_approve: time.to_formatted_s(:db), 
+				                  	status: "Approved"
+				                }
+				              })
+				            permitted = params.require(:consolidate).permit(:group_head_approve, :status)
+				            # raise params.inspect
+				            @request.update(permitted)
+				            i +=1
+				        end
+					flash[:success] = "Requests has successfully Approved"
+					redirect_to consolidates_path
+				    end
+		        elsif @categ.uniq.length == 1
+		        	if categ.uniq == "IT Equipment"
+		        		if @status.include?("Approved") || @status.include?("Dispproved") || @status.include?("Received") || 
+		        				@status.include?("Rejected") || @status.include?("Purchase Ordered") || @status.include?("Pending")
+				          flash[:danger] = "Unable to approve request/s. Please select Inspected Consolidated Request/s"
+				          redirect_to consolidates_path
+				        else
+		        			i = 0;
+				        	while i < @x
+					            @request = Consolidate.find(arr[i])
+					            params = ActionController::Parameters.new({
+					                consolidate: {
+					        			group_head_approve: time.to_formatted_s(:db), 
+					                  	status: "Approved"
+					                }
+					              })
+					            permitted = params.require(:consolidate).permit(:group_head_approve, :status)
+					            # raise params.inspect
+					            @request.update(permitted)
+					            i +=1
+					        end
+						flash[:success] = "Requests has successfully Approved"
+						redirect_to consolidates_path
+					    end
+		        	elsif @categ.uniq == "Other Equipment"
+		        		if @status.include?("Approved") || @status.include?("Dispproved") || @status.include?("Received") || 
+		        				@status.include?("Rejected") || @status.include?("Purchase Ordered") || @status.include?("Inspected")
+				          flash[:danger] = "Unable to approve request/s. Please select Pending Consolidated Request/s"
+				          redirect_to consolidates_path
+				        else
+		        			i = 0;
+				        	while i < @x
+					            @request = Consolidate.find(arr[i])
+					            params = ActionController::Parameters.new({
+					                consolidate: {
+					        			group_head_approve: time.to_formatted_s(:db), 
+					                  	status: "Approved"
+					                }
+					              })
+					            permitted = params.require(:consolidate).permit(:group_head_approve, :status)
+					            # raise params.inspect
+					            @request.update(permitted)
+					            i +=1
+					        end
+						flash[:success] = "Requests has successfully Approved"
+						redirect_to consolidates_path
+					    end
+		        	end
+		        elsif categ.uniq.length == 0
+		        	flash[:danger] = "Please select consolidated request/s to approve"
+				    redirect_to consolidates_path
+		        end
 			end
 		elsif @action == "Disapprove" || @disapp != nil
 			if @disapp != nil
@@ -174,29 +236,78 @@ class ConsolidatesController < ApplicationController
 		          @x +=1
 		        end
 
-		        i = 0;
-		        if @status.include?("Approved") || @status.include?("Dispproved") || @status.include?("Received") || @status.include?("Rejected") || @status.include?("Purchase Requested") || @status.include?("Pending")
-		          flash[:danger] = "Unable to approve request/s. Please select Pending Consolidated Request/s"
-		          redirect_to consolidates_path
+		        if @categ.uniq.length > 1
+		        	if @status.include?("Approved") || @status.include?("Dispproved") || @status.include?("Received") || 
+		        			@status.include?("Rejected") || @status.include?("Purchase Ordered") || @status.include?("Pending")
+				          flash[:danger] = "Unable to approve request/s. Please select Inspected Consolidated Request/s"
+				          redirect_to consolidates_path
+				    else
+		        		i = 0;
+				    	while i < @x
+				            @request = Consolidate.find(arr[i])
+				            params = ActionController::Parameters.new({
+					            consolidate: {
+					       			group_head_approve: time.to_formatted_s(:db), 
+						          	status: "Dispproved"
+					            }
+				            })
+					        permitted = params.require(:consolidate).permit(:group_head_approve, :status)
+					        @request.update(permitted)
+				            i +=1
+					        end
+						flash[:success] = "Requests has successfully Dispproved"
+						redirect_to consolidates_path
+					    end
+		        elsif @categ.uniq.length == 1
+		        	if @categ.uniq == "IT Equipment"
+			        	if @status.include?("Approved") || @status.include?("Dispproved") || @status.include?("Received") || 
+			        			@status.include?("Rejected") || @status.include?("Purchase Ordered") || @status.include?("Inspected")
+					        flash[:danger] = "Unable to approve request/s. Please select Inspected Consolidated Request/s"
+					        redirect_to consolidates_path
+					    else
+			        		i = 0;
+					    	while i < @x
+						        @request = Consolidate.find(arr[i])
+						        params = ActionController::Parameters.new({
+							        consolidate: {
+						       			group_head_approve: time.to_formatted_s(:db), 
+							          	status: "Dispproved"
+						            }
+					            })
+						        permitted = params.require(:consolidate).permit(:group_head_approve, :status)
+						        @request.update(permitted)
+						        i +=1
+						    end
+						flash[:success] = "Requests has successfully Dispproved"
+						redirect_to consolidates_path
+					    end
+		        	elsif @categ.uniq == "Other Equipment"
+		        		if @status.include?("Approved") || @status.include?("Dispproved") || @status.include?("Received") || 
+			        			@status.include?("Rejected") || @status.include?("Purchase Ordered")
+					        flash[:danger] = "Unable to approve request/s. Please select Pending Consolidated Request/s"
+					        redirect_to consolidates_path
+					    else
+			        		i = 0;
+					    	while i < @x
+						        @request = Consolidate.find(arr[i])
+						        params = ActionController::Parameters.new({
+							        consolidate: {
+						       			group_head_approve: time.to_formatted_s(:db), 
+							          	status: "Dispproved"
+						            }
+					            })
+						        permitted = params.require(:consolidate).permit(:group_head_approve, :status)
+						        @request.update(permitted)
+						        i +=1
+						    end
+						flash[:success] = "Requests has successfully Dispproved"
+						redirect_to consolidates_path
+					    end
+		        	end
 		        elsif @categ.uniq.length == 0
-		          flash[:danger] = "Please select consolidated request/s to disapprove"
-		          redirect_to consolidates_path
-		        else
-		        	while i < @x
-			            @request = Consolidate.find(arr[i])
-			            params = ActionController::Parameters.new({
-			                consolidate: {
-			        			group_head_approve: time.to_formatted_s(:db), 
-			                  	status: "Dispproved"
-			                }
-			              })
-			            permitted = params.require(:consolidate).permit(:group_head_approve, :status)
-			            @request.update(permitted)
-			            i +=1
-			        end
-				flash[:success] = "Requests has successfully Dispproved"
-				redirect_to consolidates_path
-			    end
+		        	flash[:danger] = "Please select consolidated request/s to disapprove"
+		          	redirect_to consolidates_path
+		        end
 			end
 		elsif @action == "Receive" || @receive != nil
 			if @receive != nil
@@ -227,14 +338,15 @@ class ConsolidatesController < ApplicationController
 		          @x +=1
 		        end
 
-		        i = 0;
-		        if @status.include?("Pending") || @status.include?("Dispproved") || @status.include?("Received") || @status.include?("Rejected") || @status.include?("Purchase Requested") || @status.include?("Inspected")
+		        if @status.include?("Pending") || @status.include?("Dispproved") || @status.include?("Received") || 
+		        	@status.include?("Rejected") || @status.include?("Purchase Ordered") || @status.include?("Inspected")
 		          flash[:danger] = "Unable to approve request/s. Please select Approved Consolidated Request/s"
 		          redirect_to consolidates_path
 		        elsif @categ.uniq.length == 0
 		          flash[:danger] = "Please select consolidated request/s to Receive"
 		          redirect_to consolidates_path
 		        else
+		        	i = 0;
 		        	while i < @x
 			            @request = Consolidate.find(arr[i])
 			            params = ActionController::Parameters.new({
@@ -280,14 +392,15 @@ class ConsolidatesController < ApplicationController
 		          @x +=1
 		        end
 
-		        i = 0;
-		        if @status.include?("Pending") || @status.include?("Dispproved") || @status.include?("Received") || @status.include?("Rejected") || @status.include?("Purchase Requested") || @status.include?("Inspected")
+		        if @status.include?("Pending") || @status.include?("Dispproved") || @status.include?("Received") || 
+		        	@status.include?("Rejected") || @status.include?("Purchase Ordered") || @status.include?("Inspected")
 		          flash[:danger] = "Unable to approve request/s. Please select Approved Consolidated Request/s"
 		          redirect_to consolidates_path
 		        elsif @categ.uniq.length == 0
 		          flash[:danger] = "Please select consolidated request/s to Reject"
 		          redirect_to consolidates_path
 		        else
+		        	i = 0;
 		        	while i < @x
 			            @request = Consolidate.find(arr[i])
 			            params = ActionController::Parameters.new({
@@ -304,18 +417,18 @@ class ConsolidatesController < ApplicationController
 				redirect_to consolidates_path
 			    end
 			end
-		elsif @action == "Make PR" || @pr != nil
-			if @receive != nil
+		elsif @action == "Make PO" || @po != nil
+			if @po != nil
 				@consolidate = Consolidate.find(params[:id])
 				params = ActionController::Parameters.new({
 			        consolidate: {
 			        	ppmd_head_approve: time.to_formatted_s(:db), 
-			            status: "Received"
+			            status: "Purchase Ordered"
 			        }
-	                })
+	            })
 		        permitted = params.require(:consolidate).permit(:ppmd_head_approve, :status)
 		        if @request.update(permitted)
-		        	flash[:success] = "Requests has successfully Received"
+		        	flash[:success] = "Consolidated Requests has successfully Ordered"
 					redirect_to consolidates_path
 		        else
 		        	render 'index'
@@ -333,28 +446,18 @@ class ConsolidatesController < ApplicationController
 		          @x +=1
 		        end
 
-		        i = 0;
-		        if @status.include?("Pending") || @status.include?("Dispproved") || @status.include?("Approved") || @status.include?("Rejected") || @status.include?("Purchase Requested") || @status.include?("Inspected")
-		          flash[:danger] = "Unable to approve request/s. Please select Approved Consolidated Request/s"
-		          redirect_to consolidates_path
+		        if @status.include?("Pending") || @status.include?("Dispproved") || @status.include?("Approved") || 
+		        	@status.include?("Rejected") || @status.include?("Purchase Requested") || @status.include?("Inspected")
+			        flash[:danger] = "Unable to order request/s. Please select Received Consolidated Request/s"
+			        redirect_to consolidates_path
+		        elsif @categ.uniq.length > 1
+		        	flash[:danger] = "Unable to order request/s. Please select 1 Request Type."
+			        redirect_to consolidates_path
 		        elsif @categ.uniq.length == 0
-		          flash[:danger] = "Please select consolidated request/s to Purchase"
+		          flash[:danger] = "Please select received consolidated request/s to Order."
 		          redirect_to consolidates_path
 		        else
-		        	while i < @x
-			            @request = Consolidate.find(arr[i])
-			            params = ActionController::Parameters.new({
-			                consolidate: {
-			        			ppmd_head_approve: time.to_formatted_s(:db), 
-			                  	status: "Received"
-			                }
-			              })
-			            permitted = params.require(:consolidate).permit(:ppmd_head_approve, :status)
-			            @request.update(permitted)
-			            i +=1
-			        end
-				flash[:success] = "Requests has successfully Received"
-				redirect_to consolidates_path
+		        	redirect_to new_order_path(:cons_ids => arr)
 			    end
 			end
 		else
@@ -385,7 +488,8 @@ class ConsolidatesController < ApplicationController
 				        }
 	                })
 		        	asd = params.require(:consolidate_line).permit(:specification)
-					@consolidate.consolidate_lines.update(asd)
+					@consolidate_line = ConsolidateLine.find(@consolidate.consolidate_lines.ids[x])
+					@consolidate_line.update(asd)
 					x +=1
 				end
 				flash[:success] = "Specification has been added!"
@@ -406,7 +510,7 @@ class ConsolidatesController < ApplicationController
 	  	end
 	    
 	    def require_heads
-	      if current_user.designation.name != "Department Head" && current_user.designation.name != "Group Head"
+	      if current_user.designation.name != "Department Head" && current_user.designation.name != "Group Head" && current_user.designation.name != "System Admin"
 	        flash[:danger] = "You can't access this transaction."
 	        redirect_to root_path
 	      end

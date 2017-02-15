@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170207060154) do
+ActiveRecord::Schema.define(version: 20170214055150) do
 
   create_table "brands", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string   "name"
@@ -46,6 +46,7 @@ ActiveRecord::Schema.define(version: 20170207060154) do
     t.string   "status"
     t.integer  "inspected_by"
     t.datetime "inspected_date"
+    t.string   "ConsNum"
   end
 
   create_table "departments", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -65,6 +66,30 @@ ActiveRecord::Schema.define(version: 20170207060154) do
     t.integer "user_id"
     t.integer "department_id"
     t.integer "designation_id"
+  end
+
+  create_table "order_lines", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.integer "type_id"
+    t.integer "product_id"
+    t.string  "description"
+    t.integer "qty"
+    t.integer "unit_id"
+    t.integer "unit_price"
+    t.integer "amount"
+    t.integer "consolidate_id"
+    t.integer "order_id"
+  end
+
+  create_table "orders", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string   "PONumber"
+    t.string   "terms"
+    t.date     "delivery_date"
+    t.integer  "supplier_id"
+    t.string   "total_amount"
+    t.string   "user_id"
+    t.string   "status"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
   end
 
   create_table "products", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -88,6 +113,20 @@ ActiveRecord::Schema.define(version: 20170207060154) do
     t.integer  "department_id"
     t.string   "reason"
     t.string   "status"
+    t.string   "RISNum"
+  end
+
+  create_table "suppliers", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string   "name"
+    t.string   "address"
+    t.string   "web"
+    t.string   "email"
+    t.string   "tel"
+    t.string   "tin"
+    t.string   "fax"
+    t.string   "representative"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
   end
 
   create_table "types", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
