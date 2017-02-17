@@ -39,14 +39,7 @@ class GroupsController < ApplicationController
   end
 
   private
-  def group_params
-    params.require(:group).permit(:name)
-  end
-
-  def require_admin
-    if !logged_in? || (logged_in? and !current_desig.name == "System Admin")
-      flash[:danger] = "Only admins can perform that action"
-      redirect_to groups_path
+    def group_params
+      params.require(:group).permit(:name)
     end
-  end
 end

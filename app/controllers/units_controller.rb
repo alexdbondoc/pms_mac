@@ -41,11 +41,4 @@ class UnitsController < ApplicationController
   def unit_params
     params.require(:unit).permit(:name)
   end
-  
-  def require_admin
-    if !logged_in? || (logged_in? and !current_desig.name == "System Admin")
-      flash[:danger] = "Only admins can perform that action"
-      redirect_to departments_path
-  	end
-  end
 end

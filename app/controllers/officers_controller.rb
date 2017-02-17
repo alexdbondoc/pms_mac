@@ -37,15 +37,8 @@ class OfficersController < ApplicationController
     	@officer = Officer.find(params[:id])
     	#@department_users = @department.users.paginate(page: params[:page], per_page: 5)
   	end
-  	private
-  	def officer_params
-    	params.require(:officer).permit(:user_id, :department_id, :designation_id)
-  	end
-  
-  	def require_admin
-    	if !logged_in? || (logged_in? and !current_desig.name == "System Admin")
-      		flash[:danger] = "Only admins can perform that action"
-      		redirect_to officers_path
-  		end
-  	end
+    	private
+    	def officer_params
+      	params.require(:officer).permit(:user_id, :department_id, :designation_id)
+    	end
 end

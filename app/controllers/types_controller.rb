@@ -40,15 +40,8 @@ class TypesController < ApplicationController
   end
 
   private
-  def type_params
-    params.require(:type).permit(:name, :category_id)
-  end
-
-  def require_admin
-    if !logged_in? || (logged_in? and !current_desig.name == "System Admin")
-      flash[:danger] = "Only admins can perform that action"
-      redirect_to types_path
+    def type_params
+      params.require(:type).permit(:name, :category_id)
     end
-  end
 
 end

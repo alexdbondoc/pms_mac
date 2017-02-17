@@ -1,4 +1,6 @@
 class SuppliersController < ApplicationController
+  before_action :require_user
+  before_action :require_admin
   before_action :set_supplier, only: [:show, :edit, :update, :destroy]
 
   # GET /suppliers

@@ -1,0 +1,38 @@
+<div class="panel panel-default">
+  <div class="panel-heading center"><strong>Receive Purchase Order Form</strong></div>
+    <table class="table">
+      <thead>
+        <tr><td colspan="12" align="center"><%= will_paginate %></td></tr>
+        <th><center>Receive<br>Number</center></th>
+        <th><center>PO<br>Number</center></th>
+        <th><center>Total<br>Amount</center></th>
+        <th><center>Received By</center></th>
+        <th><center>Delivery<br>Report<br>Number</center></th>
+        <th><center>Delivery<br>Report<br>Date</center></th>
+        <th><center>Invoice<br>Number</center></th>
+        <th><center>Invoice<br>Date</center></th>
+        <th><center>Delivery<br>Type</center></th>
+      </thead>
+      <tbody>
+        <%@receives.each do |receive|%>
+          <tr>
+            <td><center><strong><%= receive.receive_num %></strong></center></td>
+            <td><center><strong><%= receive.order.PONumber %></strong></center></td>
+            <td>
+              <center>
+                <strong>
+                  <%= number_to_currency(receive.gross, delimiter: ',', unit: '₱ ') %>
+                </strong>
+              </center>
+            </td>
+            <td><center><strong><%= receive.user.empname %></strong></center></td>
+            <td><center><strong><%= receive.dr_num %></strong></center></td>
+            <td><center><strong><%= receive.dr_date.to_date.to_formatted_s(:rfc822) %></strong></center></td>
+            <td><center><strong><%= receive.invoice_num %></strong></center></td>
+            <td><center><strong><%= receive.invoice_date.to_date.to_formatted_s(:rfc822) %></strong></center></td>
+            <td><center><strong><%= receive.delivery_type %></strong></center></td>
+          </tr>
+        <%end%>
+      </tbody>
+    </table>
+</div>

@@ -1,6 +1,6 @@
 class ConsolidatesController < ApplicationController
-	before_action :require_heads
 	before_action :require_user
+	before_action :require_department_head
 	def index
 		sleep 1
 		if current_user.designation.name == "Group Head"
@@ -129,7 +129,7 @@ class ConsolidatesController < ApplicationController
 		          @status[@x] = @request.status
 		          @x +=1
 		        end
-
+				
 				# raise params.inspect
 		        if @categ.uniq.length > 1
 		        	if @status.include?("Approved") || @status.include?("Dispproved") || @status.include?("Received") || 
@@ -155,7 +155,8 @@ class ConsolidatesController < ApplicationController
 					redirect_to consolidates_path
 				    end
 		        elsif @categ.uniq.length == 1
-		        	if categ.uniq == "IT Equipment"
+		        	# raise params.inspect
+		        	if @categ[0] == "IT Equipment"
 		        		if @status.include?("Approved") || @status.include?("Dispproved") || @status.include?("Received") || 
 		        				@status.include?("Rejected") || @status.include?("Purchase Ordered") || @status.include?("Pending")
 				          flash[:danger] = "Unable to approve request/s. Please select Inspected Consolidated Request/s"
@@ -178,7 +179,7 @@ class ConsolidatesController < ApplicationController
 						flash[:success] = "Requests has successfully Approved"
 						redirect_to consolidates_path
 					    end
-		        	elsif @categ.uniq == "Other Equipment"
+		        	elsif @categ[0] == "Other Equipment"
 		        		if @status.include?("Approved") || @status.include?("Dispproved") || @status.include?("Received") || 
 		        				@status.include?("Rejected") || @status.include?("Purchase Ordered") || @status.include?("Inspected")
 				          flash[:danger] = "Unable to approve request/s. Please select Pending Consolidated Request/s"
@@ -202,7 +203,7 @@ class ConsolidatesController < ApplicationController
 						redirect_to consolidates_path
 					    end
 		        	end
-		        elsif categ.uniq.length == 0
+		        elsif @categ.uniq.length == 0
 		        	flash[:danger] = "Please select consolidated request/s to approve"
 				    redirect_to consolidates_path
 		        end
@@ -239,7 +240,7 @@ class ConsolidatesController < ApplicationController
 		        if @categ.uniq.length > 1
 		        	if @status.include?("Approved") || @status.include?("Dispproved") || @status.include?("Received") || 
 		        			@status.include?("Rejected") || @status.include?("Purchase Ordered") || @status.include?("Pending")
-				          flash[:danger] = "Unable to approve request/s. Please select Inspected Consolidated Request/s"
+				          flash[:danger] = "Unable to disapprove request/s. Please select Inspected Consolidated Request/s"
 				          redirect_to consolidates_path
 				    else
 		        		i = 0;
@@ -340,7 +341,7 @@ class ConsolidatesController < ApplicationController
 
 		        if @status.include?("Pending") || @status.include?("Dispproved") || @status.include?("Received") || 
 		        	@status.include?("Rejected") || @status.include?("Purchase Ordered") || @status.include?("Inspected")
-		          flash[:danger] = "Unable to approve request/s. Please select Approved Consolidated Request/s"
+		          flash[:danger] = "Unable to Receive request/s. Please select Approved Consolidated Request/s"
 		          redirect_to consolidates_path
 		        elsif @categ.uniq.length == 0
 		          flash[:danger] = "Please select consolidated request/s to Receive"
@@ -394,7 +395,7 @@ class ConsolidatesController < ApplicationController
 
 		        if @status.include?("Pending") || @status.include?("Dispproved") || @status.include?("Received") || 
 		        	@status.include?("Rejected") || @status.include?("Purchase Ordered") || @status.include?("Inspected")
-		          flash[:danger] = "Unable to approve request/s. Please select Approved Consolidated Request/s"
+		          flash[:danger] = "Unable to reject request/s. Please select Approved Consolidated Request/s"
 		          redirect_to consolidates_path
 		        elsif @categ.uniq.length == 0
 		          flash[:danger] = "Please select consolidated request/s to Reject"
@@ -448,7 +449,7 @@ class ConsolidatesController < ApplicationController
 
 		        if @status.include?("Pending") || @status.include?("Dispproved") || @status.include?("Approved") || 
 		        	@status.include?("Rejected") || @status.include?("Purchase Requested") || @status.include?("Inspected")
-			        flash[:danger] = "Unable to order request/s. Please select Received Consolidated Request/s"
+			        flash[:danger] = "Unable to order request/s. Please select Received Consolidated Request/s."
 			        redirect_to consolidates_path
 		        elsif @categ.uniq.length > 1
 		        	flash[:danger] = "Unable to order request/s. Please select 1 Request Type."
@@ -508,11 +509,4 @@ class ConsolidatesController < ApplicationController
 	    	params.require(:consolidate).permit(:category_id, :user_id, :department_id, :officer_id, :received_by, :purpose, :inspected_by, :status, 
 	       						consolidate_lines_attributes: [:consolidate_id, :request_id, :product_id, :type_id, :unit_id, :qty, :specification])
 	  	end
-	    
-	    def require_heads
-	      if current_user.designation.name != "Department Head" && current_user.designation.name != "Group Head" && current_user.designation.name != "System Admin"
-	        flash[:danger] = "You can't access this transaction."
-	        redirect_to root_path
-	      end
-	    end  
 end

@@ -243,7 +243,7 @@ class RequestsController < ApplicationController
   	end
     
     def require_same_user
-      if current_user != @request.user and !current_desig.name == "System Admin"
+      if current_user != @request.user and !current_user.designation.name == "System Admin"
         flash[:danger] = "You can only edit or delete your own requests"
         redirect_to root_path
       end

@@ -14,6 +14,7 @@ Rails.application.routes.draw do
 	resources :officers
 	resources :orders
 	resources :products
+  	resources :receives
 	resources :requests
 	resources :request_lines
 	resources :suppliers

@@ -44,7 +44,7 @@ class ProductsController < ApplicationController
   end
 
   def require_admin
-    if !logged_in? || (logged_in? and !current_desig.name == "System Admin")
+    if !logged_in? || (logged_in? and !current_user.designation.name == "System Admin")
       flash[:danger] = "Only admins can perform that action"
       redirect_to products_path
     end

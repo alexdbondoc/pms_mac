@@ -39,14 +39,7 @@ class BrandsController < ApplicationController
   	end
 
   	private
-  	def brand_params
-    	params.require(:brand).permit(:name)
-  	end
-
-  	def require_admin
-    	if !logged_in? || (logged_in? and !current_desig.name == "System Admin")
-    		flash[:danger] = "Only admins can perform that action"
-    		redirect_to brand_path(@brand)
+    	def brand_params
+      	params.require(:brand).permit(:name)
     	end
-  	end
 end

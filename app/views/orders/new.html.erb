@@ -8,10 +8,13 @@
       <table class="table">
         <thead>
           <tr>
+            <td colspan="4"><center><strong>Supplier Information</strong></center></td>
+            <td colspan="4"><center><strong>Purchase Oder Information:</strong></center></td>
+          </tr>
+          <tr>
             <td colspan="4">
               <center>
-                <strong>Supplier:</strong>
-                <%= f.collection_select(:supplier_id, Supplier.all, :id, :name, {include_blank: 'Please Select'})%>
+                <%= f.collection_select(:supplier_id, Supplier.all, :id, :name, {include_blank: 'Please Select'}%>
               </center>
             </td>
             <td colspan="2"><center><strong>Purchase Oder Number:</strong></center></td>
@@ -21,29 +24,50 @@
           </tr>
           <tr>
             <td colspan="4"> 
-              <%= f.hidden_field :PONumber, class: "form-control", autofocus: true, value: @ponum %>
+              <%= f.hidden_field :PONumber, autofocus: true, value: @ponum %>
               <%= f.hidden_field :cons_ids, value: @cons_ids %>
               <%= f.hidden_field(:user_id, value: current_user.id) %>
               <%= f.hidden_field(:status, value: "Pending") %>
+              <strong> Address: </strong>
+              <%= text_field_tag :address, nil, readonly: true, size: 73, :style => "text-align: Center" %>
             </td>
             <td colspan="2"><center><strong>Purchase Order Date:</strong></center></td>
             <td colspan="2"><center><strong><%= @time.to_date.to_formatted_s(:long) %></strong></center></td>
           </tr>
           <tr>
-            <td colspan="2">
-              
+            <td colspan="4">
+              <center>
+                <strong>Tel No.:</strong> &nbsp
+                <%= text_field_tag :tel, nil, readonly: true, size: 10, :style => "text-align: Center" %>&nbsp
+                <strong>Fax No.:</strong> &nbsp
+                <%= text_field_tag :fax, nil, readonly: true, size: 20, :style => "text-align: Center" %>&nbsp
+                <strong>Tin No.:</strong> &nbsp
+                <%= text_field_tag :tin, nil, readonly: true, size: 13, :style => "text-align: Center" %>
+              </center>
             </td>
-            <td colspan="2"><span id='supplier_contact'></span></td>
             <td colspan="2"><center><strong>Terms of Payment: </strong></center></td>
             <td colspan="2">
               <center><strong>Payable immediately, due net</strong></center>
-              <%= f.hidden_field :terms, class: "form-control", autofocus: true, value: "Payable immediately, due net" %>
+              <%= f.hidden_field :terms, value: "Payable immediately, due net" %>
             </td>
           </tr>
+          <tr>
+            <td colspan="4">
+              <center>
+                <strong>Contact Person:</strong> &nbsp
+                <%= text_field_tag :person, nil, readonly: true, size: 25, :style => "text-align: Center" %>&nbsp
+                <strong>Email:</strong> &nbsp
+                <%= text_field_tag :email, nil, readonly: true, size: 25, :style => "text-align: Center" %>&nbsp
+              </center>
+            </td>
+            <td colspan="2"><center><strong>Mode of Procurement: </strong></center></td>
+            <td colspan="2"><center><strong>DC (Direct Contracting)</strong></center></td>
           <tr>
             <th colspan="4"><center><strong>Place of Delivery:</strong></center></th>
             <th colspan="4"><center><strong>Date of Delivery:</strong></center></th>
           </tr>
+          <%= content_tag :div, class: "supplier_info", data: { supp: @supp } do %>
+          <% end %>
           <tr>
             <td colspan="4">
               <center>
@@ -73,47 +97,43 @@
           <% @consolidate_lines.each do |cl| %>
           <%= f.fields_for :order_lines, @order.order_lines.build do |ol| %>
                 <tr>
-                  <div class="row">
-                    <div class="form-group">
-                        <%= ol.hidden_field(:consolidate_id, value: cl.consolidate_id) %>
-                      <td> 
-                        <center>
-                          <strong><%= cl.type.name %></strong>
-                          <%= ol.hidden_field(:type_id, value: cl.type_id) %>
-                        </center> 
-                      </td>
-                      <td colspan="3"> 
-                        <center>
-                          <strong>
-                            <%= cl.product.name %>/<%= cl.specification%>
-                            <%= ol.hidden_field(:product_id, value: cl.product_id) %>
-                            <%= ol.hidden_field(:description, value: cl.specification) %>
-                          </strong>
-                        </center> 
-                      </td>
-                        <td> 
-                        <center>
-                          <strong>
-                            <%= pluralize(cl.qty, "#{cl.unit.name}")%> 
-                            <%= ol.hidden_field(:qty, value: cl.qty)%>
-                            <%= ol.hidden_field(:unit_id, value: cl.unit_id) %>
-                          </strong>
-                        </center> 
-                      </td>
-                      <td> 
-                        <center>
-                          <%= ol.number_field :unit_price, min: 100, class: :unit_price, 
-                            value: number_to_currency(ol.object.unit_price.to_f, delimiter: '', unit: '') %>
-                        </center> 
-                      </td>
-                      <td> 
-                        <center>
-                          <%= ol.number_field :amount, readonly: true, 
-                            value: number_to_currency(ol.object.amount.to_f, delimiter: '', unit: '')%>
-                        </center> 
-                      </td>
-                    </div>
-                  </div>
+                  <%= ol.hidden_field(:consolidate_id, value: cl.consolidate_id) %>
+                  <td> 
+                    <center>
+                      <strong><%= cl.type.name %></strong>
+                      <%= ol.hidden_field(:type_id, value: cl.type_id) %>
+                    </center> 
+                  </td>
+                  <td colspan="3"> 
+                    <center>
+                      <strong>
+                        <%= cl.product.name %>/<%= cl.specification%>
+                        <%= ol.hidden_field(:product_id, value: cl.product_id) %>
+                        <%= ol.hidden_field(:description, value: cl.specification) %>
+                      </strong>
+                    </center> 
+                  </td>
+                    <td> 
+                    <center>
+                      <strong>
+                        <%= pluralize(cl.qty, "#{cl.unit.name}")%> 
+                        <%= ol.hidden_field(:qty, value: cl.qty)%>
+                        <%= ol.hidden_field(:unit_id, value: cl.unit_id) %>
+                      </strong>
+                    </center> 
+                  </td>
+                  <td> 
+                    <center>
+                      <%= ol.number_field :unit_price, min: 100, class: :unit_price, 
+                        value: number_to_currency(ol.object.unit_price.to_f, delimiter: '', unit: '') %>
+                    </center> 
+                  </td>
+                  <td> 
+                    <center>
+                      <%= ol.number_field :amount, readonly: true, 
+                        value: number_to_currency(ol.object.amount.to_f, delimiter: '', unit: '')%>
+                    </center> 
+                  </td>
                 </tr>
             <%end%>
           <%end%>

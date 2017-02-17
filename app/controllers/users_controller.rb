@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   before_action :require_user
-	before_action :set_user, only: [:edit, :update, :show]
   before_action :require_admin, except: [:index, :show]
+	before_action :set_user, only: [:edit, :update, :show]
   def index
     @users = User.order("empname").paginate(page: params[:page], per_page: 5)
   end
@@ -48,16 +48,9 @@ class UsersController < ApplicationController
   end
 
   def require_same_user
-    if current_user != @user and !current_desig == "System Admin"
+    if current_user != @user and !urrent_user.designation.name == "System Admin"
       flash[:danger] = "You can only update your own account"
       redirect_to root_path
-    end
-  end
-
-  def require_admin
-    if !logged_in? || (logged_in? and !current_desig.name == "System Admin")
-      flash[:danger] = "Only admins can perform that action"
-      redirect_to users_path
     end
   end
 

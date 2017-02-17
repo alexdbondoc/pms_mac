@@ -43,11 +43,4 @@ class DesignationsController < ApplicationController
     params.require(:designation).permit(:name)
   end
 
-  def require_admin
-    if !logged_in? || (logged_in? and !current_desig.name == "System Admin")
-      flash[:danger] = "Only admins can perform that action"
-      redirect_to designations_path
-    end
-  end
-
 end

@@ -1,0 +1,161 @@
+<%= form_for(@receive) do |f| %>
+  <%= render 'share/errors', obj: @receive %>
+  <div class="panel panel-default">
+    <div class="panel-heading center"><strong>Receive Purchase Order Form</strong></div>
+    <table class="table">
+      <thead>
+        <tr>
+          <td colspan="6"><center><strong>Receive Information</strong></center></td>
+          <td colspan="6"><center><strong>Delivery Information</strong></center></td>
+        </tr>
+        <tr>
+          <td colspan="3"><center><strong>Receive Number:</strong></center></td>
+          <td colspan="3"><center><strong><%= @receive_num %></strong></center></td>
+          <td colspan="3"><center><strong>Delivery Report No:</strong></center></td>
+          <td colspan="3">
+            <center><%= f.text_field :dr_num, :style => "text-align: Center", type: :number %></center>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3"><center><strong>Purchase Order Number:</strong></center></td>
+          <td colspan="3"><center><strong><%= @order.PONumber %></strong></center></td>
+          <td colspan="3">
+            <center><strong>Delivery Report Date:</strong></center>
+            <%= f.hidden_field(:receive_num, value: @receive_num) %>
+            <%= f.hidden_field(:user_id, value: current_user.id) %>
+            <%= f.hidden_field(:dr_date, value: @time.to_date.to_formatted_s(:db)) %>
+            <%= f.hidden_field(:invoice_date, value: @time.to_date.to_formatted_s(:db)) %>
+            <%= f.hidden_field(:order_id, value: @order.id) %>
+            <%= f.hidden_field(:delivery_type) %>
+            <%= f.hidden_field(:gross, value: @order.total_amount) %>
+            <%= f.hidden_field(:tax, value: "#{@order.total_amount.to_f * 0.12}") %>
+            <%= f.hidden_field(:net, value: "#{@order.total_amount.to_f - (@order.total_amount.to_f * 0.12)}") %>
+            <%= hidden_field_tag(:order, @order_id) %>
+          </td>
+          <td colspan="3"><center><strong><%= @time.to_date.to_formatted_s(:long) %></strong></center></td>
+        </tr>
+        <tr>
+          <td colspan="3"><center><strong>Purchase Order Date:</strong></center></td>
+          <td colspan="3">
+            <center><strong><%= @order.created_at.to_date.to_formatted_s(:long) %></strong></center>
+          </td>
+          <td colspan="3"><center><strong>Invoice No:</strong></center></td>
+          <td colspan="3">
+            <center><%= f.text_field :invoice_num, :style => "text-align: Center", type: :number %></center>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3"><center><strong>Supplier:</strong></center></td>
+          <td colspan="3"><center><strong><%= @order.supplier.name %></strong></center></td>
+          <td colspan="3"><center><strong>Invoice Date:</strong></center></td>
+          <td colspan="3"><center><strong><%= @time.to_date.to_formatted_s(:long) %></strong></center></td>
+        </tr>
+        <tr>
+          <th><center>Equipment Type</center></th>
+          <th colspan="5"><center>Equipment Description</center></th>
+          <th><center>Quantity</center></th></center></th>
+          <th><center>Unit Price</center></th>
+          <th><center>Total Price</center></th>
+          <th><center>Receiving<br>Quantity</center></th>
+          <th><center>Remaining<br>Quantity</center></th>
+        </tr>
+      </thead>
+      <tbody>
+        <%i = 0%>
+        <%@order_lines.each do |ol|%>
+          <%= f.fields_for :receive_lines, @receive.receive_lines.build do |rl| %>
+            <tr>
+              <td>
+                <center>
+                  <strong><%= ol.type.name %></strong>
+                  <%= rl.hidden_field(:type_id, value: ol.type_id) %>
+                </center> 
+              </td>
+              <td colspan="5">
+                <center>
+                  <strong><%= ol.product.name %>/<%= ol.description %></strong>
+                  <%= rl.hidden_field(:product_id, value: ol.product_id) %>
+                  <%= rl.hidden_field(:description, value: ol.description) %>
+                </center> 
+              </td>
+              <td>
+                <center>
+                  <strong><%= pluralize(ol.qty, "#{ol.unit.name}")%> </strong>
+                  <%= rl.hidden_field(:qty, value: ol.qty) %>
+                  <%= rl.hidden_field(:unit_id, value: ol.unit_id) %>
+                </center>
+              </td>
+              <td>
+                <center>
+                  <strong><%= number_to_currency(ol.unit_price, delimiter: ',', unit: '₱ ') %></strong>
+                </center>
+              </td>
+              <td>
+                <center>
+                  <strong><%= number_to_currency(ol.amount, delimiter: ',', unit: '₱ ') %></strong>
+                </center>
+              </td>
+              <td>
+                <center>
+                  <%= rl.number_field :receiving_qty, value: 0, in: 0..ol.qty, autofocus: true, 
+                        class: :receive_qty, disabled: true %>
+                </center>
+              </td>
+              <td>
+                <center>
+                  <%= hidden_field_tag "remain_qty['#{i}']", nil, multiple: true %>
+                  <%= text_field_tag "rem_qty['#{i}']", 0, disabled: true,
+                          :style => "text-align: Center", multiple: true  %>
+                </center>
+              </td>
+            </tr>  
+          <%end%>
+          <%i +=1%>
+        <%end%>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td></td>
+          <td colspan="4"><center><strong>Total Payment:</strong></center></td>
+          <td></td>
+          <td></td>
+          <td>
+            <center>
+              <strong><%= number_to_currency(@order.total_amount, delimiter: ',', unit: '₱ ') %></strong>
+            </center>
+          </td>
+          <td colspan="3"></td>
+        </tr>
+        <tr>
+          <td colspan="11">
+            <center> 
+              <strong>Delivery Type: &nbsp</strong>
+              <%= select_tag "types", "<option>Please Select</option><option>Complete Delivery</option><option>Partial Delivery</option>".html_safe %>
+            </center>
+          </td>
+        </tr>
+        <tr><td colspan="11"><center><strong>Receiving Party</strong></center></td></tr>
+        <tr>
+          <td colspan="11">
+            <center>
+              <strong>
+                Receiving Officer: &nbsp <%= current_user.empname %><br>
+                Officer Designation: &nbsp <%= current_user.designation.name %><br>
+                Department: &nbsp <%= current_user.department.name %> Department<br>
+                Date Recieved: &nbsp <%= @time.to_date.to_formatted_s(:long) %>
+              </strong>
+            </center>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="11">
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-8">
+                <center><%= f.submit(@receive.new_record? ? "Receive" : "Update and Receive", class: "btn btn-primary btn-lg")%></center>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+<%end%>

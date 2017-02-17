@@ -100,7 +100,8 @@
 	               		        class: "btn btn-xs btn-success" %>
 	            <%end%>
 	        <%elsif current_user.designation.name == "Department Head" && 
-		    		current_user.department.name == "IT Department" && @consolidate.status == "Pending"%>
+		    		current_user.department.name == "Information and Communication Technology" && 
+		    		@consolidate.status == "Pending"%>
 		    	<%= link_to "Add Specification", edit_consolidate_path(@consolidate, :inspect => true),
 	           	            data: {confirm: "Are you sure you want to inspect this request?"}, 
 	                        	class: "btn btn-xs btn-primary" %>

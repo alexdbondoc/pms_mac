@@ -4,6 +4,7 @@ class User < ApplicationRecord
 	has_many :officers, dependent: :destroy
 	has_many :requests, dependent: :destroy
 	has_many :consolidates, dependent: :destroy
+	has_many :receive, dependent: :destroy
 
 	before_save{ self.email = email.downcase }
 	validates :empname, presence: true, 

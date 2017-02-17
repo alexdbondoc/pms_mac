@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170214055150) do
+ActiveRecord::Schema.define(version: 20170216090828) do
 
   create_table "brands", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string   "name"
@@ -95,6 +95,34 @@ ActiveRecord::Schema.define(version: 20170214055150) do
   create_table "products", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string  "name"
     t.integer "type_id"
+  end
+
+  create_table "receive_lines", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.integer  "type_id"
+    t.integer  "product_id"
+    t.string   "description"
+    t.integer  "qty"
+    t.integer  "unit_id"
+    t.integer  "receiving_qty"
+    t.integer  "receive_id"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
+
+  create_table "receives", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string   "receive_num"
+    t.integer  "user_id"
+    t.string   "dr_num"
+    t.datetime "dr_date"
+    t.string   "invoice_num"
+    t.datetime "invoice_date"
+    t.string   "delivery_type"
+    t.integer  "order_id"
+    t.string   "gross"
+    t.string   "tax"
+    t.string   "net"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
   end
 
   create_table "request_lines", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|

@@ -38,6 +38,7 @@
               <li><%= link_to "New Request", new_request_path %></li>
               <li><%= link_to "List of Consolidated Requests", consolidates_path %></li>
               <li><%= link_to "List of Purchase Order", orders_path %></li>
+              <li><%= link_to "List of Received Purchase Order", receives_path %></li>
             </ul>
           </li>
         <% end %>
@@ -52,7 +53,7 @@
         <% if logged_in? %>
           <li><%= link_to 'Log out', logout_path, method: :delete %></li>
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Your Profile <%= "Admin" if current_desig.name == "System Admin" %><span class="caret"></span></a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Your Profile <%= "Admin" if current_user.designation.name == "System Admin" %><span class="caret"></span></a>
             <ul class="dropdown-menu">
               <li><%= link_to "Edit your profile", edit_user_path(current_user) %></li>
               <li><%= link_to "View your profile", user_path(current_user) %>

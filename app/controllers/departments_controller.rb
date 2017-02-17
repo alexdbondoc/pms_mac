@@ -37,15 +37,8 @@ class DepartmentsController < ApplicationController
     @department = Department.find(params[:id])
     #@department_users = @department.users.paginate(page: params[:page], per_page: 5)
   end
-  private
-  def department_params
-    params.require(:department).permit(:name, :group_id)
-  end
-  
-  def require_admin
-    if !logged_in? || (logged_in? and !current_desig.name == "System Admin")
-      flash[:danger] = "Only admins can perform that action"
-      redirect_to departments_path
-  	end
-  end
+    private
+    def department_params
+      params.require(:department).permit(:name, :group_id)
+    end
 end

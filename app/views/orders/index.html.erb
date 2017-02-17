@@ -5,8 +5,7 @@
   <!-- Table -->
   <table class="table">
     <thead>
-      <tr>
-        <td><%= will_paginate %></td></tr>
+      <tr><td colspan="12" align="center"><%= will_paginate %></td></tr>
       <th></th>
       <th><center>PO<br>Number</center></th>
       <th><center>Created<br>By</center></th>
@@ -41,19 +40,8 @@
           <%end%>
           <%if logged_in? && (current_user.designation.name == "Department Head" && 
                     current_user.department.name == "Property and Procurement")%>
-            <%= f.submit "Receive", method: :put, 
-              data: { confirm: "Are you sure you want to receive checked request?" }, 
-                class: "btn btn-xs btn-success"%> 
             <%= f.submit "Reject", method: :put, 
-              data: { confirm: "Are you sure you want to reject checked request?" }, 
-                class: "btn btn-xs btn-danger"%>
-          <%elsif logged_in? && (current_user.designation.name == "Department Head" && 
-                    current_user.department.name == "Information and Communication Technology")%>
-            <%= f.submit "Inspect", method: :put, 
-              data: { confirm: "Are you sure you want to Inspect checked request?" }, 
-                class: "btn btn-xs btn-success"%> 
-            <%= f.submit "Reject", method: :put, 
-              data: { confirm: "Are you sure you want to reject checked request?" }, 
+              data: { confirm: "Are you sure you want to reject checked purchase order?" }, 
                 class: "btn btn-xs btn-danger"%>
           <%else%>
             <th></th>
@@ -77,8 +65,9 @@
           <td><center><strong><%= ords.created_at.to_date.to_formatted_s(:rfc822) %></strong></center></td>
           <td><center><strong><%= truncate(ords.supplier.name, length: 20)%> </strong></center></td>
           <td><center><strong><%= ords.delivery_date.to_date.to_formatted_s(:rfc822) %></strong></center></td>
-          <td><center><strong><%= truncate(ords.terms, length: 20) %></strong></center></td>
+          <td><center><strong><%= truncate(ords.terms, length: 10) %></strong></center></td>
           <td>
+            <%@order = ords%>
             <center>
               <strong><%= number_to_currency(ords.total_amount, delimiter: ',', unit: '₱ ') %></strong>
             </center>
@@ -88,9 +77,16 @@
             <%= link_to "View", order_path(ords),
                 data: {confirm: "Are you sure you want to view this Purchase Order?"}, 
                   class: "btn btn-xs btn-info" %>
-            <%if ords.status == "Pending" && current_user.designation.name == "Property and Procurement"%>
+            <%if ords.status == "Pending"%>
+              <%= link_to "Receive", order_path(@order, :receive => true), method: :put, 
+                data: { confirm: "Are you sure you want to receive this purchase order?" }, 
+                  class: "btn btn-xs btn-success"%> 
               <%= link_to "Update", edit_order_path(ords), class: "btn btn-xs btn-primary", 
                   data: { confirm: "Are you sure you want to update this Purchase Order??" }%>
+            <%elsif ords.status == "Partially Received"%>
+              <%= link_to "Receive", order_path(@order, :receive => true), method: :put, 
+                data: { confirm: "Are you sure you want to receive this purchase order?" }, 
+                  class: "btn btn-xs btn-success"%> 
             <%end%>
           </td>
         </tr>
