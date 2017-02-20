@@ -5,9 +5,9 @@ class RequestsController < ApplicationController
 	def index
       sleep 1
       if current_user.department.name == "Department Head"
-	      @requests = Request.where(:department_id => current_user.department_id).order("date_created DESC").paginate(page: params[:page], per_page: 5)
+	      @requests = Request.where(:department_id => current_user.department_id).order("date_created DESC").paginate(page: params[:page], per_page: 25)
       else
-        @requests = Request.where(:user_id => current_user.id).order("date_created DESC").paginate(page: params[:page], per_page: 5)
+        @requests = Request.where(:user_id => current_user.id).order("date_created DESC").paginate(page: params[:page], per_page: 25)
       end
 	end
   

@@ -1,4 +1,6 @@
 class InventoriesController < ApplicationController
+  before_action :require_user
+  before_action :require_property
   before_action :set_inventory, only: [:show, :edit, :update, :destroy]
 
   # GET /inventories

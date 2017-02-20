@@ -1,5 +1,5 @@
 <div class="panel panel-default">
-  <div class="panel-heading center"><strong>Inventory of Properties</strong></div>
+  <div class="panel-heading center"><strong>Property Inventory</strong></div>
     <table class="table">
       <thead>
         <tr><td colspan="12" align="center"><%= will_paginate %></td></tr>
@@ -23,13 +23,15 @@
               <center><strong><%= inventory.product.name %>&nbsp<%= inventory.description %></strong></center>
             </td>
             <td><center><strong><%= pluralize(inventory.qty, "#{inventory.unit.name}") %></strong></center></td>
-            <td><center><strong><%= inventory.created_at.to_date.to_formatted_s(:rfc822) %></strong></center></td>
+            <td><center><strong><%= inventory.updated_at.to_date.to_formatted_s(:rfc822) %></strong></center></td>
             <td><center><strong><%= inventory.status %></strong></center></td>
+            <%if inventory.status == "Received"%>
             <td>
-              <%= link_to "View", inventory_path(inventory),
-                  data: {confirm: "Are you sure you want to view this Received Purchase Order?"}, 
-                    class: "btn btn-xs btn-info" %>
+              <%= link_to "Assign", edit_inventory_path(inventory),
+                data: {confirm: "Are you sure you want to add specs to this request?"}, 
+                  class: "btn btn-xs btn-primary" %>
             </td>
+            <%end%>
           </tr>
         <%end%>
       </tbody>
