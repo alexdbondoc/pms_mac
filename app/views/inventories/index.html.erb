@@ -1,25 +1,37 @@
-<p id="notice"><%= notice %></p>
-
-<h1>Inventories</h1>
-
-<table>
-  <thead>
-    <tr>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% @inventories.each do |inventory| %>
-      <tr>
-        <td><%= link_to 'Show', inventory %></td>
-        <td><%= link_to 'Edit', edit_inventory_path(inventory) %></td>
-        <td><%= link_to 'Destroy', inventory, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
-<br>
-
-<%= link_to 'New Inventory', new_inventory_path %>
+<div class="panel panel-default">
+  <div class="panel-heading center"><strong>Inventory of Properties</strong></div>
+    <table class="table">
+      <thead>
+        <tr><td colspan="12" align="center"><%= will_paginate %></td></tr>
+        <th><center>Inventory<br>Number</center></th>
+        <th><center>Receive<br>Number</center></th>
+        <th><center>Equipment<br>Category</center></th>
+        <th><center>Equipment<br>Type</center></th>
+        <th colspan="3"><center>Equipment<br>Description</center></th>
+        <th><center>Equipment<br>Quantity</center></th>
+        <th><center>Inventory<br>Date</center></th>
+        <th><center>Equipment<br>Status</center></th>
+      </thead>
+      <tbody>
+        <%@inventories.each do |inventory|%>
+          <tr>
+            <td><center><strong><%= inventory.inventory_number %></strong></center></td>
+            <td><center><strong><%= inventory.receive.receive_num %></strong></center></td>
+            <td><center><strong><%= inventory.category.name %></strong></center></td>
+            <td><center><strong><%= inventory.type.name %></strong></center></td>
+            <td colspan="3">
+              <center><strong><%= inventory.product.name %>&nbsp<%= inventory.description %></strong></center>
+            </td>
+            <td><center><strong><%= pluralize(inventory.qty, "#{inventory.unit.name}") %></strong></center></td>
+            <td><center><strong><%= inventory.created_at.to_date.to_formatted_s(:rfc822) %></strong></center></td>
+            <td><center><strong><%= inventory.status %></strong></center></td>
+            <td>
+              <%= link_to "View", inventory_path(inventory),
+                  data: {confirm: "Are you sure you want to view this Received Purchase Order?"}, 
+                    class: "btn btn-xs btn-info" %>
+            </td>
+          </tr>
+        <%end%>
+      </tbody>
+    </table>
+</div>

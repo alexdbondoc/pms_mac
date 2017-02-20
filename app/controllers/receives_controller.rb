@@ -50,7 +50,6 @@ class ReceivesController < ApplicationController
   def create
     @receive = Receive.new(receive_params)
     @time = Time.now
-    count = Inventory.count()
     @receive_last = Receive.last()
     @order_id = params[:order]
     @order = Order.find(@order_id)
@@ -71,19 +70,18 @@ class ReceivesController < ApplicationController
       arr[i] = v
       i +=1
     end
-    @inventory = Inventory.new
-    raise @receive.inspect
+    count = Inventory.count()
     if @receive.save
       i = 0
       @order_lines.each do |lines|
-        # params = ActionController::Parameters.new({
-        #   order_line: {
-        #     qty: arr[i]
-        #   }
-        # })
-        # asd = params.require(:order_line).permit(:qty) 
-        # @order_line = OrderLine.find(lines.id)
-        # @order_line.update(asd)
+        params = ActionController::Parameters.new({
+          order_line: {
+            qty: arr[i]
+          }
+        })
+        asd = params.require(:order_line).permit(:qty) 
+        @order_line = OrderLine.find(lines.id)
+        @order_line.update(asd)
         i +=1
       end
       params = ActionController::Parameters.new({
@@ -93,7 +91,7 @@ class ReceivesController < ApplicationController
       })
       zxc = params.require(:order).permit(:status) 
       @order.update(zxc)
-      flash[:success] = "Purchase Order has successfully Received."
+      flash[:success] = "Purchase Order has successfully Received. Received Equipments are now in the inventory."
       redirect_to receives_path
     else
       render 'new'
@@ -132,7 +130,7 @@ class ReceivesController < ApplicationController
     permitted = params.require(:receive).permit(:delivery_type) 
 
     if @receive.update(permitted)
-      raise @receive.inspect
+
       params = ActionController::Parameters.new({
         order: {
           status: type
@@ -167,11 +165,11 @@ class ReceivesController < ApplicationController
           }
         })
         jkl = params.require(:inventory).permit(:qty) 
-        @receive_line = ReceiveLine.find(@receive.receive_lines.ids[k])
-        @receive_line.update(jkl)
+        @inventory = Inventory.find(@receive.inventories.ids[k])
+        @inventory.update(jkl)
         k +=1
       end
-      flash[:success] = "Purchase Order has successfully Received."
+      flash[:success] = "Purchase Order has successfully Received. Received Equipments are now in the inventory."
       redirect_to receives_path
     else
       render 'edit'
@@ -197,6 +195,7 @@ class ReceivesController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def receive_params
       params.require(:receive).permit(:receive_num, :user_id, :dr_num, :dr_date, :invoice_num, :invoice_date, :delivery_type, :order_id, :gross, :tax, :net,  
-        receive_lines_attributes: [:receive_id, :type_id, :product_id, :description, :qty, :unit_id, :receiving_qty])
+        receive_lines_attributes: [:receive_id, :type_id, :product_id, :description, :qty, :unit_id, :receiving_qty], 
+        inventories_attributes: [:receive_id, :inventory_number, :category_id, :type_id, :product_id, :qty, :description, :status, :unit_id])
     end
 end

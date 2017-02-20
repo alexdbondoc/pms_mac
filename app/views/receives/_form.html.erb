@@ -111,12 +111,12 @@
               </td>
             </tr>  
           <%end%>
-          <%= f.fields_for :inventories_attributes, @receive.inventories.build do |invent| %>
+          <%= f.fields_for :inventories, @receive.inventories.build do |invent| %>
             <%= invent.hidden_field(:inventory_number, value: "INV00000#{count + i +1}") %>
-            <%= invent.hidden_field(:category_, value: ol.type.category_id) %>
+            <%= invent.hidden_field(:category_id, value: ol.type.category_id) %>
             <%= invent.hidden_field(:type_id, value: ol.type_id) %>
             <%= invent.hidden_field(:product_id, value: ol.product_id) %>
-            <%= invent.hidden_field(:qty, value: ol.qty) %>
+            <%= invent.hidden_field(:qty, value: 0) %>
             <%= invent.hidden_field(:description, value: ol.description) %>
             <%= invent.hidden_field(:status, value: "Received") %>
             <%= invent.hidden_field(:unit_id, value: ol.unit_id) %>

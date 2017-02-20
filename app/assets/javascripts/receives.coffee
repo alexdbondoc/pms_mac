@@ -14,6 +14,7 @@ $(document).ready ->
 	      			$('#receive_receive_lines_attributes_' + x + '_receiving_qty').val($('#receive_receive_lines_attributes_' + x + '_qty').val())
 	      			$('#remain_qty__' + x + '_').val(0)
 	      			$('#rem_qty__' + x + '_').val(0)
+	      			$('#receive_inventories_attributes_' + x + '_qty').val($('#receive_receive_lines_attributes_' + x + '_qty').val())
 	      			console.log x
 	      			x++
 	      		x = 0
@@ -23,6 +24,7 @@ $(document).ready ->
 	      			$('#receive_receive_lines_attributes_' + x + '_receiving_qty').val(0)
 	      			$('#remain_qty__' + x + '_').val($('#receive_receive_lines_attributes_' + x + '_qty').val())
 	      			$('#rem_qty__' + x + '_').val($('#receive_receive_lines_attributes_' + x + '_qty').val())
+	      			$('#receive_inventories_attributes_' + x + '_qty').val(0)
 	      			x++
 	      		x = 0
 	    else
@@ -32,6 +34,7 @@ $(document).ready ->
 	      			$('#receive_receive_lines_attributes_' + x + '_receiving_qty').val(0)
 	      			$('#remain_qty__' + x + '_').val(0)
 	      			$('#rem_qty__' + x + '_').val(0)
+	      			$('#receive_inventories_attributes_' + x + '_qty').val(0)
 	      			x++
 	      	x = 0
 
@@ -44,6 +47,7 @@ $(document).ready ->
 	      			$('#receive_receive_lines_attributes_' + x + '_receiving_qty').val($('#po_qty__' + x + '_').val())
 	      			$('#remain_qty__' + x + '_').val(0)
 	      			$('#rem_qty__' + x + '_').val(0)
+	      			$('#receive_inventories_attributes_' + x + '_qty').val($('#po_qty__' + x + '_').val())
 	      			console.log x
 	      			x++
 	      		x = 0
@@ -53,6 +57,7 @@ $(document).ready ->
 	      			$('#receive_receive_lines_attributes_' + x + '_receiving_qty').val(0)
 	      			$('#remain_qty__' + x + '_').val($('#po_qty__' + x + '_').val())
 	      			$('#rem_qty__' + x + '_').val($('#po_qty__' + x + '_').val())
+	      			$('#receive_inventories_attributes_' + x + '_qty').val(0)
 	      			x++
 	      		x = 0
 	    else
@@ -62,6 +67,7 @@ $(document).ready ->
 	      			$('#receive_receive_lines_attributes_' + x + '_receiving_qty').val(0)
 	      			$('#remain_qty__' + x + '_').val(0)
 	      			$('#rem_qty__' + x + '_').val(0)
+	      			$('#receive_inventories_attributes_' + x + '_qty').val(0)
 	      			x++
 	      	x = 0
 
@@ -73,9 +79,13 @@ $(document).ready ->
 	  if remain_qty < 0
 	  	$('#remain_qty__' + count + '_').val(remain_qty)
 	  	$('#rem_qty__' + count + '_').val(remain_qty)
+	  	$('#receive_inventories_attributes_' + count + '_qty').val(receive_qty)
 	  	$('#rem_qty__' + count + '_').css("background-color","#ff0000")
 	  else
 	  	$('#remain_qty__' + count + '_').val(remain_qty)
 	  	$('#rem_qty__' + count + '_').val(remain_qty)
+	  	$('#receive_inventories_attributes_' + count + '_qty').val(receive_qty)
 	  	$('#rem_qty__' + count + '_').css("background-color","#ffffff")
 	  console.log $('#remain_qty__' + count + '_').val()
+
+
