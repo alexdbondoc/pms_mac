@@ -78,12 +78,10 @@
                 data: {confirm: "Are you sure you want to view this Purchase Order?"}, 
                   class: "btn btn-xs btn-info" %>
             <%if ords.status == "Pending"%>
-              <%= link_to "Receive", order_path(@order, :receive => true), method: :put, 
-                data: { confirm: "Are you sure you want to receive this purchase order?" }, 
-                  class: "btn btn-xs btn-success"%> 
               <%= link_to "Update", edit_order_path(ords), class: "btn btn-xs btn-primary", 
-                  data: { confirm: "Are you sure you want to update this Purchase Order??" }%>
-            <%elsif ords.status == "Partially Received"%>
+                data: { confirm: "Are you sure you want to update this Purchase Order??" }%>
+            <%end%>
+            <%if ords.status != "Completely Received"%>
               <%= link_to "Receive", order_path(@order, :receive => true), method: :put, 
                 data: { confirm: "Are you sure you want to receive this purchase order?" }, 
                   class: "btn btn-xs btn-success"%> 

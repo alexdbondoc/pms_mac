@@ -31,6 +31,15 @@
             <td><center><strong><%= receive.invoice_num %></strong></center></td>
             <td><center><strong><%= receive.invoice_date.to_date.to_formatted_s(:rfc822) %></strong></center></td>
             <td><center><strong><%= receive.delivery_type %></strong></center></td>
+            <td>
+              <%= link_to "View", receife_path(receive),
+                  data: {confirm: "Are you sure you want to view this Received Purchase Order?"}, 
+                    class: "btn btn-xs btn-info" %>
+
+              <%= link_to "Delete", receife_path(receive), method: :delete, 
+                  data: {confirm: "Are you sure you want to delete this request?"}, 
+                  class: "btn btn-xs btn-danger" %>
+            </td>
           </tr>
         <%end%>
       </tbody>

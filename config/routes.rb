@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :inventories
 	root 'welcome#index'
 
 	get 'login', to: 'sessions#new'

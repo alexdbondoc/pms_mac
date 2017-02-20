@@ -14,7 +14,7 @@
           <tr>
             <td colspan="4">
               <center>
-                <%= f.collection_select(:supplier_id, Supplier.all, :id, :name, {include_blank: 'Please Select'}%>
+                <%= f.collection_select(:supplier_id, Supplier.all, :id, :name, {include_blank: 'Please Select'})%>
               </center>
             </td>
             <td colspan="2"><center><strong>Purchase Oder Number:</strong></center></td>
@@ -24,10 +24,10 @@
           </tr>
           <tr>
             <td colspan="4"> 
-              <%= f.hidden_field :PONumber, autofocus: true, value: @ponum %>
+              <%= f.hidden_field :PONumber, value: @ponum %>
               <%= f.hidden_field :cons_ids, value: @cons_ids %>
-              <%= f.hidden_field(:user_id, value: current_user.id) %>
-              <%= f.hidden_field(:status, value: "Pending") %>
+              <%= f.hidden_field :user_id, value: current_user.id %>
+              <%= f.hidden_field :status, value: "Pending" %>
               <strong> Address: </strong>
               <%= text_field_tag :address, nil, readonly: true, size: 73, :style => "text-align: Center" %>
             </td>
@@ -95,47 +95,47 @@
         </thead>
         <tbody>
           <% @consolidate_lines.each do |cl| %>
-          <%= f.fields_for :order_lines, @order.order_lines.build do |ol| %>
-                <tr>
-                  <%= ol.hidden_field(:consolidate_id, value: cl.consolidate_id) %>
-                  <td> 
-                    <center>
-                      <strong><%= cl.type.name %></strong>
-                      <%= ol.hidden_field(:type_id, value: cl.type_id) %>
-                    </center> 
-                  </td>
-                  <td colspan="3"> 
-                    <center>
-                      <strong>
-                        <%= cl.product.name %>/<%= cl.specification%>
-                        <%= ol.hidden_field(:product_id, value: cl.product_id) %>
-                        <%= ol.hidden_field(:description, value: cl.specification) %>
-                      </strong>
-                    </center> 
-                  </td>
+            <%= f.fields_for :order_lines, @order.order_lines.build do |ol| %>
+                  <tr>
+                    <%= ol.hidden_field(:consolidate_id, value: cl.consolidate_id) %>
                     <td> 
-                    <center>
-                      <strong>
-                        <%= pluralize(cl.qty, "#{cl.unit.name}")%> 
-                        <%= ol.hidden_field(:qty, value: cl.qty)%>
-                        <%= ol.hidden_field(:unit_id, value: cl.unit_id) %>
-                      </strong>
-                    </center> 
-                  </td>
-                  <td> 
-                    <center>
-                      <%= ol.number_field :unit_price, min: 100, class: :unit_price, 
-                        value: number_to_currency(ol.object.unit_price.to_f, delimiter: '', unit: '') %>
-                    </center> 
-                  </td>
-                  <td> 
-                    <center>
-                      <%= ol.number_field :amount, readonly: true, 
-                        value: number_to_currency(ol.object.amount.to_f, delimiter: '', unit: '')%>
-                    </center> 
-                  </td>
-                </tr>
-            <%end%>
+                      <center>
+                        <strong><%= cl.type.name %></strong>
+                        <%= ol.hidden_field(:type_id, value: cl.type_id) %>
+                      </center> 
+                    </td>
+                    <td colspan="3"> 
+                      <center>
+                        <strong>
+                          <%= cl.product.name %>/<%= cl.specification%>
+                          <%= ol.hidden_field(:product_id, value: cl.product_id) %>
+                          <%= ol.hidden_field(:description, value: cl.specification) %>
+                        </strong>
+                      </center> 
+                    </td>
+                      <td> 
+                      <center>
+                        <strong>
+                          <%= pluralize(cl.qty, "#{cl.unit.name}")%> 
+                          <%= ol.hidden_field(:qty, value: cl.qty)%>
+                          <%= ol.hidden_field(:unit_id, value: cl.unit_id) %>
+                        </strong>
+                      </center> 
+                    </td>
+                    <td> 
+                      <center>
+                        <%= ol.number_field :unit_price, min: 100, class: :unit_price, 
+                          value: number_to_currency(ol.object.unit_price.to_f, delimiter: '', unit: '') %>
+                      </center> 
+                    </td>
+                    <td> 
+                      <center>
+                        <%= ol.number_field :amount, readonly: true, 
+                          value: number_to_currency(ol.object.amount.to_f, delimiter: '', unit: '')%>
+                      </center> 
+                    </td>
+                  </tr>
+              <%end%>
           <%end%>
         </tbody>
         <tfoot>
@@ -149,7 +149,7 @@
             <td>
               <center>
                 <%= f.number_field :total_amount, readonly: true, class: :total_amount, 
-                      value: number_to_currency(f.object.total_amount.to_f, delimiter: '', unit: '')%>
+                      value: number_to_currency(f.object.total_amount.to_f, delimiter: ',', unit: '₱ ')%>
               </center>
             </td>
           </tr>
@@ -157,7 +157,9 @@
           <td colspan=8>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-8">
-                <center><%= f.submit(@order.new_record? ? "Generate Purchase Order" : "Update Purchase Order", class: "btn btn-primary btn-lg")%></center>
+                <center>
+                  <%= f.submit(@order.new_record? ? "Generate Purchase Order" : "Update Purchase Order", class: "btn btn-primary btn-lg")%>
+                </center>
               </div>
             </div>
           </td>
@@ -165,4 +167,4 @@
         </tfoot>
       </table>
   </div>
-<% end %>
+<%end%>

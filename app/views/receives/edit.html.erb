@@ -67,6 +67,7 @@
       </thead>
       <tbody>
         <%j = 0%>
+        <%k = 0%>
         <%= f.fields_for :receive_lines, @receive.receive_lines do |rl| %>
             <tr>
               <td>
@@ -121,6 +122,16 @@
               </td>
             </tr>  
         <%j +=1%>
+        <%end%>
+        <%= f.fields_for :inventories_attributes, @receive.inventories do |invent| %>
+          <%= invent.hidden_field(:inventory_number) %>
+          <%= invent.hidden_field(:category_id) %>
+          <%= invent.hidden_field(:type_id) %>
+          <%= invent.hidden_field(:product_id) %>
+          <%= invent.hidden_field(:qty) %>
+          <%= invent.hidden_field(:description) %>
+          <%= invent.hidden_field(:status) %>
+          <%= invent.hidden_field(:unit_id) %>
         <%end%>
       </tbody>
       <tfoot>

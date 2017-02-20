@@ -31,6 +31,7 @@ class OrdersController < ApplicationController
       @supp_add[i] = supp.address
       i +=1
     end
+
     if @order_last == nil
       @ponum = "4900000001"
     else
@@ -114,9 +115,10 @@ class OrdersController < ApplicationController
         })
         permitted = params.require(:order).permit(:status) 
         if @order.update(permitted)
-        else
           flash[:warning] = "Purchase Order has successfully rejected"
           redirect_to orders_path
+        else
+          render 'show'
         end
       else
         x = 0
@@ -127,7 +129,7 @@ class OrdersController < ApplicationController
           status[x] = o.status
           x +=1
         end
-        if status.include?("Rejected") || status.include?("Received")
+        if status.include?("Rejected") || status.include?("Partially Received") || status.include?("Completely Received")
           flash[:danger] = "Unable to reject purchase order. Please select a pending one."
           redirect_to orders_path
         elsif status.uniq.length == 0
@@ -168,7 +170,7 @@ class OrdersController < ApplicationController
           @order_line = OrderLine.find(@order.order_lines.ids[i])
           @order_line.update(asd)
           i +=1
-          end  
+        end  
         flash[:success] = "Purchase Order has successfully updated"
         redirect_to orders_path
       else
