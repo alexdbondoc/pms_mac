@@ -4,4 +4,5 @@ class Inventory < ApplicationRecord
 	belongs_to :unit
 	belongs_to :product
 	belongs_to :category
+	has_many :assign_lines, dependent: :destroy
 end

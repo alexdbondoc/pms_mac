@@ -1,0 +1,128 @@
+<%= form_for(@assign) do |f| %>
+  <%= render 'share/errors', obj: @assign %>
+  <div class="panel panel-default">
+    <div class="panel-heading center"><strong>Assign Received Purchase Order Form</strong></div>
+    <table class="table">
+      <thead>
+        <th><center>Inventory<br>Number</center></th>
+        <th><center>Equipment<br>Category</center></th>
+        <th><center>Equipment<br>Type</center></th>
+        <th colspan="3"><center>Equipment<br>Description</center></th>
+        <th><center>Quantity</center></th>
+        <th><center>Price</center></th>
+        <th><center>Inventory<br>Date</center></th>
+        <th><center>Requestor</center></th>
+      </thead>
+      <tbody>
+        <%i = 0%>
+        <%@receive_line.each do |line|%>
+          <%= f.fields_for :assign_lines, @assign.assign_lines.build do |al| %>
+            <tr>
+              <td>
+                <center><strong><%= line.receive.inventories[i].inventory_number %></strong></center>
+                <%= al.hidden_field(:inventory_number, value: line.receive.inventories[i].inventory_number)%>
+              </td>
+              <td>
+                <center><strong><%= line.receive.inventories[i].category.name %></strong></center>
+              </td>
+              <td>
+                <center><strong><%= line.receive.inventories[i].type.name %></strong></center>
+              </td>
+              <td colspan="3">
+                <center>
+                  <strong>
+                    <%=line.receive.inventories[i].product.name%> &nbsp <%=line.receive.inventories[i].description%>
+                    <%= al.hidden_field(:inventory_id, value: line.receive.inventories[i].id) %>
+                  </strong>
+                </center>
+              </td>
+              <td>
+                <center>
+                  <strong>
+                    <%= pluralize(line.receive.inventories[i].qty, "#{line.receive.inventories[i].unit.name}") %>
+                  </strong>
+                </center>
+              </td>
+              <td>
+                <center>
+                  <strong>
+                    <%= number_to_currency(line.receive.order.order_lines[i].amount, delimiter: ',', unit: '₱ ') %>
+                  </strong>
+                </center>
+              </td>
+              <td>
+                <center>
+                  <strong>
+                    <%= line.receive.inventories[i].updated_at.to_date.to_formatted_s(:rfc822) %>
+                  </strong>
+                </center>
+              </td>
+              <td>
+                <center>
+                  <strong>
+                    <%= line.receive.order.order_lines[i].consolidate.consolidate_lines[i].request.user.empname %>
+                    <%= al.hidden_field(:user_id, value: line.receive.order.order_lines[i].consolidate.consolidate_lines[i].request.user_id) %>
+                  </strong>
+                </center>
+              </td>
+            </tr>
+          <%@consolidate_by[i] = line.receive.order.order_lines[i].consolidate.user.empname%>
+          <%@cons_dept[i] = line.receive.order.order_lines[i].consolidate.department.name%>
+          <%@cons_desig[i] = line.receive.order.order_lines[i].consolidate.user.designation.name%>
+          <%@received_by = line.receive.user.empname%>
+          <%@received_dept = line.receive.user.department.name%>
+          <%@received_desig = line.receive.user.designation.name%>
+          <%= hidden_field_tag :receive, line.receive_id %>
+          <%i +=1%>
+          <%end%>
+        <%end%>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="5"><center><h4>Consolidated By</h1></center></td>
+          <td colspan="5"><center><h4>Received By</h1></center></td>
+        </tr>
+        <tr>
+          <td colspan="5"><center><strong><%= @consolidate_by.uniq.to_sentence %></strong></center></td>
+          <td colspan="5"><center><strong><%= @received_by %></strong></center></td>
+        </tr>
+        <tr>
+          <td colspan="5"><center><strong><%= @cons_desig.uniq.to_sentence %> </strong></center></td>
+          <td colspan="5"><center><strong><%= @received_desig %> </strong></center></td>
+        </tr>
+        <tr>
+          <td colspan="5"><center><strong><%= @cons_dept.uniq.to_sentence %> Department</strong></center></td>
+          <td colspan="5"><center><strong><%= @received_dept %> Department</strong></center></td>
+        </tr>
+        <tr>
+          <td colspan="10"><center><h4>Noted By</h4></center></td>
+        </tr>
+        <tr>
+          <td colspan="10"><center><strong><%= current_user.empname %></strong></center></td>
+        </tr>
+        <tr>
+          <td colspan="10"><center><strong><%= current_user.designation.name %></strong></center></td>
+        </tr>
+        <tr>
+          <td colspan="10"><center><strong><%= current_user.department.name %></strong></center></td>
+        </tr>
+        <tr>
+          <td colspan="10">
+              <div class="col-sm-12">
+                <%= f.text_area :remarks, rows: 3, autofocus: true, class: "form-control", 
+                      placeholder: "Enter Remarks" %>
+                <%= f.hidden_field(:user_id, value: current_user.id) %>
+              </div>
+          </td>
+        </tr>
+          <td colspan="8">
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-12">
+                <center><%= f.submit(@assign.new_record? ? "Assign Equipment" : "Assign Equipment", class: "btn btn-primary btn-lg")%></center>
+              </div>
+            </div>
+          </td>
+      </tfoot>
+    </table>
+  </div>
+<% end %>

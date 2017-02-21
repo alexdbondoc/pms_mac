@@ -13,6 +13,7 @@
         <th><center>Equipment<br>Status</center></th>
       </thead>
       <tbody>
+        <%i = 0%>
         <%@inventories.each do |inventory|%>
           <tr>
             <td><center><strong><%= inventory.inventory_number %></strong></center></td>
@@ -24,6 +25,7 @@
             </td>
             <td><center><strong><%= pluralize(inventory.qty, "#{inventory.unit.name}") %></strong></center></td>
             <td><center><strong><%= inventory.updated_at.to_date.to_formatted_s(:rfc822) %></strong></center></td>
+            <td><center><strong><%= inventory.assign_lines[i] %></strong></center></td>
             <td><center><strong><%= inventory.status %></strong></center></td>
             <%if inventory.status == "Received"%>
             <td>
@@ -33,6 +35,7 @@
             </td>
             <%end%>
           </tr>
+          <%i +=1%>
         <%end%>
       </tbody>
     </table>

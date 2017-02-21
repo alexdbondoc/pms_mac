@@ -101,78 +101,85 @@ class ReceivesController < ApplicationController
   # PATCH/PUT /receives/1
   # PATCH/PUT /receives/1.json
   def update
-    remain_qty = Array.new(params[:remain_qty].length)
-    po_qty = Array.new(params[:po_qty].length)
-    receive_qty = Array.new(params[:po_qty].length)
-    i = 0
-    j = 0
-    k = 0
-    if params[:types] == "Partial Delivery"
-      type = "Partially Received"
+    sx = params[:remain_qty]
+    # raise params.inspect
+
+    if params[:assign] != nil
+      redirect_to new_assign_path(:receive => @receive)
     else
-      type = "Completely Received"
-    end
-    params[:remain_qty].each do |k, v|
-      remain_qty[i] = v
-      i +=1
-    end
+      remain_qty = Array.new(sx.length)
+      po_qty = Array.new(sx.length)
+      receive_qty = Array.new(sx.length)
+      i = 0
+      j = 0
+      k = 0
+      if params[:types] == "Partial Delivery"
+        type = "Partially Received"
+      else
+        type = "Completely Received"
+      end
+      params[:remain_qty].each do |k, v|
+        remain_qty[i] = v
+        i +=1
+      end
 
-    params[:po_qty].each do |k, v|
-      po_qty[j] = v
-      j +=1
-    end
-
-    params = ActionController::Parameters.new({
-      receive: {
-        delivery_type: type
-      }
-    })
-    permitted = params.require(:receive).permit(:delivery_type) 
-
-    if @receive.update(permitted)
+      params[:po_qty].each do |k, v|
+        po_qty[j] = v
+        j +=1
+      end
 
       params = ActionController::Parameters.new({
-        order: {
-          status: type
+        receive: {
+          delivery_type: type
         }
       })
-      asd = params.require(:order).permit(:status) 
-      @order = Order.find(@receive.order_id)
-      @order.update(asd)
+      permitted = params.require(:receive).permit(:delivery_type) 
 
-      @receive.receive_lines.each do |rl|
-        params = ActionController::Parameters.new({
-          order_line: {
-            qty: remain_qty[k]
-          }
-        })
-        zxc = params.require(:order_line).permit(:qty) 
-        @order_line = OrderLine.find(@order.order_lines.ids[k])
-        @order_line.update(zxc)
+      if @receive.update(permitted)
 
         params = ActionController::Parameters.new({
-          receive_line: {
-            receiving_qty: po_qty[k].to_i + rl.receiving_qty.to_i
+          order: {
+            status: type
           }
         })
-        qwe = params.require(:receive_line).permit(:receiving_qty) 
-        @receive_line = ReceiveLine.find(@receive.receive_lines.ids[k])
-        @receive_line.update(qwe)
+        asd = params.require(:order).permit(:status) 
+        @order = Order.find(@receive.order_id)
+        @order.update(asd)
 
-        params = ActionController::Parameters.new({
-          inventory: {
-            qty: po_qty[k].to_i + rl.receiving_qty.to_i
-          }
-        })
-        jkl = params.require(:inventory).permit(:qty) 
-        @inventory = Inventory.find(@receive.inventories.ids[k])
-        @inventory.update(jkl)
-        k +=1
+        @receive.receive_lines.each do |rl|
+          params = ActionController::Parameters.new({
+            order_line: {
+              qty: remain_qty[k]
+            }
+          })
+          zxc = params.require(:order_line).permit(:qty) 
+          @order_line = OrderLine.find(@order.order_lines.ids[k])
+          @order_line.update(zxc)
+
+          params = ActionController::Parameters.new({
+            receive_line: {
+              receiving_qty: po_qty[k].to_i + rl.receiving_qty.to_i
+            }
+          })
+          qwe = params.require(:receive_line).permit(:receiving_qty) 
+          @receive_line = ReceiveLine.find(@receive.receive_lines.ids[k])
+          @receive_line.update(qwe)
+
+          params = ActionController::Parameters.new({
+            inventory: {
+              qty: po_qty[k].to_i + rl.receiving_qty.to_i
+            }
+          })
+          jkl = params.require(:inventory).permit(:qty) 
+          @inventory = Inventory.find(@receive.inventories.ids[k])
+          @inventory.update(jkl)
+          k +=1
+        end
+        flash[:success] = "Purchase Order has successfully Received. Received Equipments are now in the inventory."
+        redirect_to receives_path
+      else
+        render 'edit'
       end
-      flash[:success] = "Purchase Order has successfully Received. Received Equipments are now in the inventory."
-      redirect_to receives_path
-    else
-      render 'edit'
     end
   end
 

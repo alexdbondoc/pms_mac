@@ -6,7 +6,7 @@ class InventoriesController < ApplicationController
   # GET /inventories
   # GET /inventories.json
   def index
-    @inventories = Inventory.order("created_at DESC").paginate(page: params[:page], per_page: 20)
+    @inventories = Inventory.where("qty > 0").order("id DESC").paginate(page: params[:page], per_page: 20)
   end
 
   # GET /inventories/1

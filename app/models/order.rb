@@ -2,8 +2,8 @@ class Order < ApplicationRecord
 	belongs_to :user
 	belongs_to :supplier
 	has_many :order_lines, inverse_of: :order, dependent: :destroy
-	has_one :receive, dependent: :destroy
 	accepts_nested_attributes_for :order_lines
+	has_one :receive, dependent: :destroy
 	validates :supplier_id, presence: true
 	validates :delivery_date, presence: true
 end

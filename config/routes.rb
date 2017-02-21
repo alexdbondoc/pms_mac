@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :assigns
   resources :inventories
 	root 'welcome#index'
 
